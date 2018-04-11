@@ -53,9 +53,9 @@
             android:layout_marginLeft="@dimen/spacing_30"
             android:layout_marginRight="@dimen/spacing_30"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/spacing_10">
             <TextView
-                android:id="@+id/btnRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/spacing_5"
@@ -75,10 +75,10 @@
                 android:layout_gravity="right"/>
         </LinearLayout>
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="登录"
+            android:text="立即注册"
             android:layout_marginLeft="@dimen/spacing_30"
             android:layout_marginRight="@dimen/spacing_30"
             android:layout_marginTop="50dp"
