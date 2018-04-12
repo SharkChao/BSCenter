@@ -1,31 +1,42 @@
 package first.test.com.bscenter.utils;
 
-import android.content.Context;
 
-/**
- */
+import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
+
+import first.test.com.bscenter.base.MyLeanCloudApp;
+
 
 public class DensityUtil {
-    public DensityUtil() {
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 
-    public static int dip2px(Context var0, float var1) {
-        float var2 = var0.getResources().getDisplayMetrics().density;
-        return (int)(var1 * var2 + 0.5F);
+    /**
+     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+    
+    public static int[] getWindowSize() {
+        WindowManager windowManager = (WindowManager) MyLeanCloudApp.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(outMetrics);
+
+        int windowWidth = outMetrics.widthPixels;
+        int windowHeight = outMetrics.heightPixels;
+        
+        int[] point = new int[] {windowWidth, windowHeight};
+        
+        return point;
     }
 
-    public static int px2dip(Context var0, float var1) {
-        float var2 = var0.getResources().getDisplayMetrics().density;
-        return (int)(var1 / var2 + 0.5F);
-    }
-
-    public static int px2sp(Context var0, float var1) {
-        float var2 = var0.getResources().getDisplayMetrics().scaledDensity;
-        return (int)(var1 / var2 + 0.5F);
-    }
-
-    public static int sp2px(Context var0, float var1) {
-        float var2 = var0.getResources().getDisplayMetrics().scaledDensity;
-        return (int)(var1 * var2 + 0.5F);
-    }
 }

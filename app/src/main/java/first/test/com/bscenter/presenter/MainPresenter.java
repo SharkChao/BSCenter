@@ -2,7 +2,6 @@ package first.test.com.bscenter.presenter;
 
 
 import first.test.com.bscenter.base.BasePresenter;
-import first.test.com.bscenter.network.ApiService;
 
 /**
  */
@@ -10,15 +9,13 @@ import first.test.com.bscenter.network.ApiService;
 public class MainPresenter extends BasePresenter<MainPresenter.MainUi,MainPresenter.MainUiCallback> {
 
     private static MainPresenter mMainPresenter;
-    public static MainPresenter getInstance(ApiService apiService){
+    public static MainPresenter getInstance( ){
         if (mMainPresenter == null){
-            mMainPresenter = new MainPresenter(apiService);
+            mMainPresenter = new MainPresenter();
         }
         return mMainPresenter;
     }
-    private ApiService mApiService;
-    private  MainPresenter(ApiService apiService){
-        mApiService = apiService;
+    private  MainPresenter( ){
     }
 
     //获取数据之后回调

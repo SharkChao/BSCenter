@@ -1,12 +1,9 @@
 package first.test.com.bscenter.activity;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
-import com.alibaba.android.arouter.launcher.ARouter;
 import com.kongqw.util.FaceUtil;
 import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.util.StringUtils;
@@ -25,11 +20,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
 import first.test.com.bscenter.BuildConfig;
 import first.test.com.bscenter.R;
+import first.test.com.bscenter.activity.main.MainActivity;
+import first.test.com.bscenter.activity.main.WelcomActivity;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.constants.Constants;
@@ -38,11 +32,14 @@ import first.test.com.bscenter.event.FaceClearEvent;
 import first.test.com.bscenter.event.FaceSetEvent;
 import first.test.com.bscenter.event.SSClearEvent;
 import first.test.com.bscenter.event.SSSetEvent;
+import first.test.com.bscenter.greendao.DaoMaster;
+import first.test.com.bscenter.greendao.DaoSession;
+import first.test.com.bscenter.greendao.GreenDaoManager;
+import first.test.com.bscenter.greendao.UserDao;
+import first.test.com.bscenter.model.User;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.CommonUtil;
 import first.test.com.bscenter.utils.PasswordUtil;
-import first.test.com.bscenter.utils.PermisionUtils;
-import first.test.com.bscenter.utils.PermissionsManager;
 import first.test.com.bscenter.views.FingerPrinterView;
 import first.test.com.bscenter.views.PhotoPopupWindow;
 import io.reactivex.observers.DisposableObserver;
@@ -52,7 +49,6 @@ import zwh.com.lib.RxFingerPrinter;
 /**
  * Created by Admin on 2018/4/11.
  */
-@Route(path = "/center/LoginActivity")
 @ContentView(R.layout.activity_login)
 
 public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> implements MainPresenter.MainUi{
@@ -98,9 +94,8 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ARouter.getInstance()
-                        .build("/center/RegisterActivity")
-                        .navigation();
+                Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+                startActivity(intent);
             }
         });
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -114,22 +109,23 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                     CommonUtil.showSnackBar(btnRegister,"请先输入密码");
                     return;
                 }
-                BmobUser user = new BmobUser();
-                user.setUsername(etName.getText().toString());
+
+                User user = new User();
+                user.setName(etName.getText().toString());
                 user.setPassword(etPassword.getText().toString());
-                user.login(new SaveListener<BmobUser>() {
-                    @Override
-                    public void done(BmobUser bmobUser, BmobException e) {
-                        if (e == null){
-                            Toast.makeText(LoginActivity.this, "登陆成功!", Toast.LENGTH_SHORT).show();
-                            ARouter.getInstance().build("/center/HomeActivity")
-                                    .navigation();
-                            finish();
-                        }else {
-                            Toast.makeText(LoginActivity.this, "登录失败!"+e.getErrorCode(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+
+                DaoMaster master = GreenDaoManager.getInstance(LoginActivity.this)
+                        .getMaster();
+                DaoSession daoSession = master.newSession();
+                UserDao userDao = daoSession.getUserDao();
+                User unique = userDao.queryBuilder().where(UserDao.Properties.Name.eq(user.getName()), UserDao.Properties.Password.eq(user.getPassword())).unique();
+                if (unique == null){
+                    Toast.makeText(LoginActivity.this, "登录失败,请核对账号密码后重试!", Toast.LENGTH_SHORT).show();
+                }else {
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
         btnMore.setOnClickListener(new View.OnClickListener() {
@@ -176,9 +172,8 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 if (state == FingerPrinterView.STATE_CORRECT_PWD) {
                     Toast.makeText(LoginActivity.this, "指纹识别成功", Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
-                    ARouter.getInstance()
-                            .build("/center/HomeActivity")
-                            .navigation();
+                    Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
+                    startActivity(intent);
                     finish();
                 }
                 if (state == FingerPrinterView.STATE_WRONG_PWD) {
@@ -329,10 +324,6 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
     private void actionFaceActivity(int value){
         // 要校验的权限
-        String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA};
-        // 检查权限
-//        mPermissionsManager.checkPermissions(0, PERMISSIONS);
-
         if (value != Constants.FACE_MODE_SET) {
             Bitmap bitmap = FaceUtil.getImage(this, Constants.FACE_FILE_NAME_SAVE);
             if (!CommonUtil.isNotEmpty(bitmap)) {
@@ -340,12 +331,9 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 return;
             }
         }
-        ARouter.getInstance()
-                .build("/center/FaceDetailActivity")
-                .withInt("face_key",value)
-                .navigation();
-
-
+        Intent intent = new Intent(LoginActivity.this,FaceDetailActivity.class);
+        intent.putExtra("face_key",value);
+        startActivity(intent);
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -380,9 +368,5 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
             }
         }
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        mPermissionsManager.recheckPermissions(requestCode, permissions, grantResults);
-    }
+
 }

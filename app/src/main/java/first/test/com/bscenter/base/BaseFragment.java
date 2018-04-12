@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
-import first.test.com.bscenter.model.ResponseError;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.DensityUtil;
 
@@ -219,10 +218,10 @@ public abstract class BaseFragment<UC> extends Fragment implements BasePresenter
             }
         });
     }
-    @Override
-    public void onResponseError(ResponseError error) {
-        Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
-    }
+//    @Override
+//    public void onResponseError(ResponseError error) {
+//        Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//    }
 
 
 

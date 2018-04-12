@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import first.test.com.bscenter.model.ResponseError;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
@@ -29,7 +28,7 @@ public abstract class BasePresenter<UI extends BasePresenter.BaseUi<UC>,UC>{
     public interface BaseUi<UC> {
         void setCallbacks(UC callbacks);
         UC getCallbacks();
-        void onResponseError(ResponseError error);
+//        void onResponseError(ResponseError error);
     }
     //初始化
     public final void init() {

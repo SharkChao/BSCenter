@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
-import first.test.com.bscenter.model.ResponseError;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.DensityUtil;
 import first.test.com.bscenter.views.LoadingView;
@@ -231,10 +230,10 @@ public abstract class BaseActivity<UC> extends AppCompatActivity implements Base
     public abstract void initData();
     protected abstract void initEvent();
 
-    @Override
-    public void onResponseError(ResponseError error) {
-        Toast.makeText(currentActivity, error.getMessage(), Toast.LENGTH_SHORT).show();
-    }
+//    @Override
+//    public void onResponseError( ) {
+////        Toast.makeText(currentActivity, error.getMessage(), Toast.LENGTH_SHORT).show();
+//    }
 
 
     @Override

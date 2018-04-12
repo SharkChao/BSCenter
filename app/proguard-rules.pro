@@ -52,6 +52,16 @@
  -keep class org.apache.commons.**{*;}
  -keep class org.apache.http.** {*;}
 -dontwarn org.bytedeco.javacv.**
+-dontwarn org.apache.maven.plugins.annotations.**
+-dontwarn org.slf4j.Logger
+-dontwarn org.slf4j.LoggerFactory
+-dontwarn org.apache.maven.**
+-dontwarn sun.misc.Unsafe
+-dontwarn javax.lang.model.element.**
+-dontwarn org.codehaus.mojo.**
+-dontwarn javax.annotation.**
+-dontwarn org.bytedeco.javacpp.**
+
 #支付宝SDK-------------------------------------begin
 -dontwarn com.alipay.**
 -dontwarn com.ta.**
@@ -94,6 +104,10 @@
 -keep class first.test.com.bscenter.** { *;}
 #------------------------------------------------------end
 -keep class com.google.gson.**{*;}
+-keep public class * extends android.app.**
+-keep class org.apache.maven.plugin.**
+-dontwarn android.app.**
+-dontwarn org.apache.maven.plugin.**
 
 -keep public class * extends java.lang.** { *; }
 -keep public class * extends android.support.v4.**

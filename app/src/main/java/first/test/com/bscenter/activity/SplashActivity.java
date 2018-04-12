@@ -1,8 +1,10 @@
 package first.test.com.bscenter.activity;
 
+import android.content.Intent;
 import android.databinding.ViewDataBinding;
+import android.os.Handler;
+import android.os.Message;
 
-import com.alibaba.android.arouter.launcher.ARouter;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,23 +34,17 @@ public class SplashActivity extends BaseActivity<MainPresenter.MainUiCallback> i
 
     @Override
     public void initData() {
+
+        new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                Intent intent = new Intent(SplashActivity.this,LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }.sendEmptyMessageDelayed(1, 1000);
         //先创建被观察者，以及被观察者被注册之后发送的事件
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
-                e.onNext(0);
-            }
-        }).delay(2, TimeUnit.SECONDS).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer integer) throws Exception {
-                if (integer == 0){
-                    ARouter.getInstance()
-                            .build("/center/LoginActivity")
-                            .navigation();
-                    finish();
-                }
-            }
-        });
     }
 
     @Override

@@ -1,20 +1,13 @@
 package first.test.com.bscenter.activity;
 
+import android.content.Intent;
 import android.databinding.ViewDataBinding;
-import android.util.Log;
 import android.widget.TextView;
 
-import com.alibaba.android.arouter.launcher.ARouter;
-import com.kongqw.interfaces.OnFaceDetectorListener;
-import com.kongqw.interfaces.OnOpenCVInitListener;
-import com.kongqw.view.CameraFaceDetectionView;
 import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.view.CustomLockView;
 
-
 import org.greenrobot.eventbus.EventBus;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
 
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
@@ -91,9 +84,8 @@ public class GestureDetailActivity extends BaseActivity<MainPresenter.MainUiCall
             }else if (mLvLock.getMode() == LockMode.CLEAR_PASSWORD){
                 EventBus.getDefault().post(new SSClearEvent());
             }else if (mLvLock.getMode() == LockMode.VERIFY_PASSWORD){
-                ARouter.getInstance()
-                        .build("/center/HomeActivity")
-                        .navigation();
+                Intent intent = new Intent(GestureDetailActivity.this,HomeActivity.class);
+                startActivity(intent);
             }
             finish();
         }

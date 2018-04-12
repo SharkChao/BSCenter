@@ -6,22 +6,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.alibaba.android.arouter.facade.annotation.Route;
-
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.databinding.ActivityRegisterBinding;
+import first.test.com.bscenter.greendao.DaoMaster;
+import first.test.com.bscenter.greendao.DaoSession;
+import first.test.com.bscenter.greendao.GreenDaoManager;
+import first.test.com.bscenter.greendao.UserDao;
+import first.test.com.bscenter.model.User;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.CommonUtil;
 
 /**
  * Created by Admin on 2018/4/11.
  */
-@Route(path = "/center/RegisterActivity")
 @ContentView(R.layout.activity_register)
 
 public class RegisterActivity extends BaseActivity<MainPresenter.MainUiCallback> implements MainPresenter.MainUi{
@@ -62,20 +61,24 @@ public class RegisterActivity extends BaseActivity<MainPresenter.MainUiCallback>
                     CommonUtil.showSnackBar(btnRegister,"请先输入密码");
                     return;
                 }
-                BmobUser bmobUser = new BmobUser();
-                bmobUser.setUsername(etName.getText().toString());
-                bmobUser.setPassword(etPassword.getText().toString());
-                bmobUser.signUp(new SaveListener<BmobUser>() {
-                    @Override
-                    public void done(BmobUser bmobUser, BmobException e) {
-                        if (e == null){
-                            Toast.makeText(RegisterActivity.this, "恭喜您，注册成功!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }else {
-                            Toast.makeText(RegisterActivity.this, "注册失败"+e.getErrorCode(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+
+                User user = new User();
+                user.setName(etName.getText().toString());
+                user.setPassword(etPassword.getText().toString());
+
+                DaoMaster master = GreenDaoManager.getInstance(RegisterActivity.this)
+                        .getMaster();
+                DaoSession daoSession = master.newSession();
+                UserDao userDao = daoSession.getUserDao();
+                User unique = userDao.queryBuilder().where(UserDao.Properties.Name.eq(user.getName())).unique();
+                if (unique != null){
+                    CommonUtil.showSnackBar(etName,"当前账号已经注册过，请切换账号后重试!");
+                }else {
+                    userDao.insert(user);
+                    Toast.makeText(RegisterActivity.this, "注册成功!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
             }
         });
     }
