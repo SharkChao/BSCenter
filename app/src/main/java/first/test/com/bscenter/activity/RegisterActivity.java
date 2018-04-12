@@ -14,6 +14,7 @@ import cn.bmob.v3.listener.SaveListener;
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
+import first.test.com.bscenter.databinding.ActivityRegisterBinding;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.CommonUtil;
 

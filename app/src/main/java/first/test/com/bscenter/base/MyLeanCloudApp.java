@@ -5,12 +5,12 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.alibaba.android.arouter.launcher.ARouter;
-import com.facebook.drawee.backends.pipeline.Fresco;
 
 import javax.inject.Inject;
 
 import cn.bmob.v3.Bmob;
 import first.test.com.bscenter.inject.component.AppComponent;
+import first.test.com.bscenter.inject.component.DaggerAppComponent;
 import first.test.com.bscenter.inject.module.ApiServiceModule;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.AppUtils;
@@ -36,7 +36,6 @@ public class MyLeanCloudApp extends Application{
         AppComponent build = DaggerAppComponent.builder().apiServiceModule(new ApiServiceModule())
                 .build();
         build.inject(this);
-        Fresco.initialize(this);
     }
 
     @Override

@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_10"
-        android:text="设置人脸特征"
-        android:gravity="center"
-        android:textSize="@dimen/font_large"
-        android:textColor="@color/colorPrimary"/>
-    <com.kongqw.view.CameraFaceDetectionView
-        android:id="@+id/cameraFaceDetectionView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_10"
+            tools:text="设置人脸特征"
+            android:gravity="center"
+            android:textSize="@dimen/font_large"
+            android:textColor="@color/colorPrimary"/>
+        <com.kongqw.view.CameraFaceDetectionView
+            android:id="@+id/cameraFaceDetectionView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+</layout>

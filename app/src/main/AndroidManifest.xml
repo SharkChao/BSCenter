@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:name="first.test.com.bscenter.base.MyLeanCloudApp"
         android:theme="@style/AppTheme">
-        <activity android:name="first.test.com.xlcenter.activity.SplashActivity">
+        <activity android:name="first.test.com.bscenter.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,7 +33,7 @@
         <activity android:name=".activity.LoginActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleTask"
-            android:screenOrientation="landscape">
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.RegisterActivity"
             android:configChanges="orientation|keyboardHidden"

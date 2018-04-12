@@ -18,7 +18,8 @@ public class HomeActivity extends BaseActivity<MainPresenter.MainUiCallback> imp
     @Override
     public void initTitle() {
         isShowToolBar(true);
-        setCenterTitle("首页");
+        setCenterTitle("文件夹");
+        isShowLeft(false);
     }
 
     @Override

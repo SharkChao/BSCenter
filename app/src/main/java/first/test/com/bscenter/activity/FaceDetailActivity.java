@@ -1,14 +1,21 @@
 package first.test.com.bscenter.activity;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.databinding.ViewDataBinding;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.kongqw.interfaces.OnFaceDetectorListener;
 import com.kongqw.interfaces.OnOpenCVInitListener;
+import com.kongqw.util.FaceUtil;
 import com.kongqw.view.CameraFaceDetectionView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 
@@ -16,7 +23,11 @@ import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.constants.Constants;
+import first.test.com.bscenter.databinding.ActivityFaceDetailBinding;
+import first.test.com.bscenter.event.FaceClearEvent;
+import first.test.com.bscenter.event.FaceSetEvent;
 import first.test.com.bscenter.presenter.MainPresenter;
+import first.test.com.bscenter.utils.PermisionUtils;
 
 /**
  * Created by Admin on 2018/4/11.
@@ -27,32 +38,94 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
 
     final String TAG = "face_tag";
     private int mMode;
+    private ActivityFaceDetailBinding mBinding;
+    private TextView tvHint;
+    private CameraFaceDetectionView mCameraFaceDetectionView;
 
     @Override
     public void initTitle() {
         isShowToolBar(true);
         mMode = getIntent().getIntExtra("face_key", 0);
-        setCenterMode();
     }
 
     @Override
     public void initView(ViewDataBinding viewDataBinding) {
-
+        PermisionUtils.verifyCameraPermissions(this);
+        mBinding = (ActivityFaceDetailBinding) viewDataBinding;
+        tvHint = mBinding.tvHint;
+        mCameraFaceDetectionView = mBinding.cameraFaceDetectionView;
     }
 
     @Override
     public void initData() {
+        setCenterMode();
+    }
 
-        CameraFaceDetectionView cameraFaceDetectionView = (CameraFaceDetectionView) findViewById(R.id.cameraFaceDetectionView);
-        cameraFaceDetectionView.setOnFaceDetectorListener(new OnFaceDetectorListener() {
+    @Override
+    protected void initEvent() {
+//        mCameraFaceDetectionView.switchCamera();
+        mCameraFaceDetectionView.setOnFaceDetectorListener(new OnFaceDetectorListener() {
             @Override
             public void onFace(Mat mat, Rect rect) {
+                if (mMode == Constants.FACE_MODE_SET){
+                    boolean isSave = FaceUtil.saveImage(FaceDetailActivity.this,  mat,  rect, Constants.FACE_FILE_NAME_SAVE);
+                    if (isSave){
+                        Toast.makeText(FaceDetailActivity.this, "采集人脸特征成功!", Toast.LENGTH_SHORT).show();
+                        EventBus.getDefault().post(new FaceSetEvent());
+                        finish();
+                    }else {
+                        Toast.makeText(FaceDetailActivity.this, "采集人脸特征失败,请重试!", Toast.LENGTH_SHORT).show();
+                    }
+                }else if (mMode == Constants.FACE_MODE_CLEAR){
+                    boolean isNews = FaceUtil.saveImage(FaceDetailActivity.this,  mat,  rect, Constants.FACE_FILE_NAME_SAVE);
+                    if (isNews){
+                        double score = FaceUtil.compare(FaceDetailActivity.this, Constants.FACE_FILE_NAME_SAVE, Constants.FACE_FILE_NAME_NEW);
+                        if (score >= 70){
+                            new AlertDialog.Builder(FaceDetailActivity.this)
+                                    .setTitle("提示")
+                                    .setMessage("您确定要重置人脸特征吗?")
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            boolean isSave = FaceUtil.deleteImage(FaceDetailActivity.this, Constants.FACE_FILE_NAME_SAVE);
+                                            boolean isSave2 = FaceUtil.deleteImage(FaceDetailActivity.this, Constants.FACE_FILE_NAME_NEW);
+                                            if (isSave && isSave2){
+                                                Toast.makeText(FaceDetailActivity.this, "清除人脸特征成功!", Toast.LENGTH_SHORT).show();
+                                                EventBus.getDefault().post(new FaceClearEvent());
+                                            }
+                                        }
+                                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-//                double score = FaceUtil.compare(LoginActivity.this, String fileName1, String fileName2);
-//                boolean isSave = FaceUtil.saveImage(LoginActivity.this, mat, rect, Constants.FACE_FILE_NAME);
+                                }
+                            }).show();
+                        }
+                    }else {
+                        Toast.makeText(FaceDetailActivity.this, "采集人脸特征失败,请重试!", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }else if (mMode == Constants.FACE_MODE_VERFIY){
+                    boolean isNews = FaceUtil.saveImage(FaceDetailActivity.this,  mat,  rect, Constants.FACE_FILE_NAME_SAVE);
+                    if (isNews){
+                        double score = FaceUtil.compare(FaceDetailActivity.this, Constants.FACE_FILE_NAME_SAVE, Constants.FACE_FILE_NAME_NEW);
+                        if (score >= 70){
+                            ARouter.getInstance()
+                                    .build("/center/HomeActivity")
+                                    .navigation();
+                            finish();
+                            Toast.makeText(FaceDetailActivity.this, "登陆成功!", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(FaceDetailActivity.this, "人脸相似度为:"+score+",系统认定为不匹配!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
             }
         });
-        cameraFaceDetectionView.setOnOpenCVInitListener(new OnOpenCVInitListener() {
+
+        mCameraFaceDetectionView.setOnOpenCVInitListener(new OnOpenCVInitListener() {
             @Override
             public void onLoadSuccess() {
                 Log.i(TAG, "onLoadSuccess: ");
@@ -83,12 +156,8 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
                 Log.i(TAG, "onOtherError: ");
             }
         });
-        cameraFaceDetectionView.loadOpenCV(getApplicationContext());
-    }
 
-    @Override
-    protected void initEvent() {
-
+        mCameraFaceDetectionView.loadOpenCV(getApplicationContext());
     }
 
     private void setCenterMode(){
@@ -108,5 +177,6 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
                 break;
         }
         setCenterTitle(title);
+        tvHint.setText("请正脸看屏幕，避免光线直射");
     }
 }

@@ -1,16 +1,27 @@
 package first.test.com.bscenter.activity;
 
 import android.databinding.ViewDataBinding;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.launcher.ARouter;
+import com.kongqw.interfaces.OnFaceDetectorListener;
+import com.kongqw.interfaces.OnOpenCVInitListener;
+import com.kongqw.view.CameraFaceDetectionView;
 import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.view.CustomLockView;
 
+
+import org.greenrobot.eventbus.EventBus;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.constants.Constants;
+import first.test.com.bscenter.event.SSClearEvent;
+import first.test.com.bscenter.event.SSSetEvent;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.PasswordUtil;
 
@@ -75,6 +86,15 @@ public class GestureDetailActivity extends BaseActivity<MainPresenter.MainUiCall
         @Override
         public void onComplete(String password, int[] indexs) {
             tvHint.setText(getPassWordHint());
+            if (mLvLock.getMode() == LockMode.SETTING_PASSWORD){
+                EventBus.getDefault().post(new SSSetEvent());
+            }else if (mLvLock.getMode() == LockMode.CLEAR_PASSWORD){
+                EventBus.getDefault().post(new SSClearEvent());
+            }else if (mLvLock.getMode() == LockMode.VERIFY_PASSWORD){
+                ARouter.getInstance()
+                        .build("/center/HomeActivity")
+                        .navigation();
+            }
             finish();
         }
 

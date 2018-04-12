@@ -1,9 +1,12 @@
 package first.test.com.bscenter.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +21,28 @@ import com.kongqw.util.FaceUtil;
 import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.util.StringUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
+import first.test.com.bscenter.BuildConfig;
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.constants.Constants;
+import first.test.com.bscenter.databinding.ActivityLoginBinding;
+import first.test.com.bscenter.event.FaceClearEvent;
+import first.test.com.bscenter.event.FaceSetEvent;
+import first.test.com.bscenter.event.SSClearEvent;
+import first.test.com.bscenter.event.SSSetEvent;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.CommonUtil;
 import first.test.com.bscenter.utils.PasswordUtil;
+import first.test.com.bscenter.utils.PermisionUtils;
+import first.test.com.bscenter.utils.PermissionsManager;
 import first.test.com.bscenter.views.FingerPrinterView;
 import first.test.com.bscenter.views.PhotoPopupWindow;
 import io.reactivex.observers.DisposableObserver;
@@ -47,6 +62,9 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     private Button btnLogin;
     private TextView btnMore;
     private ActivityLoginBinding mBinding;
+    private Button mRvSetting;
+    private Button mRvSettingFace;
+//    private PermissionsManager mPermissionsManager;
 
     @Override
     public void initTitle() {
@@ -65,11 +83,18 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
     @Override
     public void initData() {
+        EventBus.getDefault().register(this);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void initEvent() {
+
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,7 +148,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 }, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        showAlert3();
                     }
                 }, new View.OnClickListener() {
                     @Override
@@ -142,7 +167,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
     public void showAlert1(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.alert_view1,null);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_view1,null);
         builder.setView(view);
         final AlertDialog alertDialog = builder.create();
         final FingerPrinterView fingerPrinterView = (FingerPrinterView)view.findViewById(R.id.fpv);
@@ -215,11 +240,11 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
         Button rvClear = (Button) contentView.findViewById(R.id.btn4);
         Button rvEdit = (Button) contentView.findViewById(R.id.btn3);
-        Button rvSetting = (Button) contentView.findViewById(R.id.btn1);
+        mRvSetting = (Button) contentView.findViewById(R.id.btn1);
         Button rvVerify = (Button) contentView.findViewById(R.id.btn2);
 
         String pin = PasswordUtil.getPin(this);
-        rvSetting.setVisibility(CommonUtil.isStrEmpty(pin)?View.VISIBLE:View.GONE);
+        mRvSetting.setVisibility(CommonUtil.isStrEmpty(pin)?View.VISIBLE:View.GONE);
         rvClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -232,7 +257,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 actionSecondActivity(LockMode.EDIT_PASSWORD);
             }
         });
-        rvSetting.setOnClickListener(new View.OnClickListener() {
+        mRvSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 actionSecondActivity(LockMode.SETTING_PASSWORD);
@@ -265,15 +290,14 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
     private void showAlert3(){
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-        View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view2, null);
+        View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view3, null);
 
         Button rvClear = (Button) contentView.findViewById(R.id.btn4);
         Button rvEdit = (Button) contentView.findViewById(R.id.btn3);
-        Button rvSetting = (Button) contentView.findViewById(R.id.btn1);
+        mRvSettingFace = (Button) contentView.findViewById(R.id.btn1);
         Button rvVerify = (Button) contentView.findViewById(R.id.btn2);
-
         Bitmap bitmap = FaceUtil.getImage(this, Constants.FACE_FILE_NAME_SAVE);
-        rvSetting.setVisibility(CommonUtil.isNotEmpty(bitmap)?View.GONE:View.VISIBLE);
+        mRvSettingFace.setVisibility(CommonUtil.isNotEmpty(bitmap)?View.GONE:View.VISIBLE);
         rvClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -286,7 +310,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 actionFaceActivity(Constants.FACE_MODE_EDIT);
             }
         });
-        rvSetting.setOnClickListener(new View.OnClickListener() {
+        mRvSettingFace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 actionFaceActivity(Constants.FACE_MODE_SET);
@@ -304,9 +328,61 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     }
 
     private void actionFaceActivity(int value){
+        // 要校验的权限
+        String[] PERMISSIONS = new String[]{Manifest.permission.CAMERA};
+        // 检查权限
+//        mPermissionsManager.checkPermissions(0, PERMISSIONS);
+
+        if (value != Constants.FACE_MODE_SET) {
+            Bitmap bitmap = FaceUtil.getImage(this, Constants.FACE_FILE_NAME_SAVE);
+            if (!CommonUtil.isNotEmpty(bitmap)) {
+                Toast.makeText(getBaseContext(), "请先设置人脸特征!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
         ARouter.getInstance()
                 .build("/center/FaceDetailActivity")
                 .withInt("face_key",value)
                 .navigation();
+
+
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SSSetEvent event) {
+        if (event != null){
+           if (mRvSetting  != null){
+               mRvSetting.setVisibility(View.GONE);
+           }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(SSClearEvent event) {
+        if (event != null){
+            if (mRvSetting  != null){
+                mRvSetting.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(FaceSetEvent event) {
+        if (event != null){
+            if (mRvSettingFace  != null){
+                mRvSettingFace.setVisibility(View.GONE);
+            }
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(FaceClearEvent event) {
+        if (event != null){
+            if (mRvSettingFace  != null){
+                mRvSettingFace.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        mPermissionsManager.recheckPermissions(requestCode, permissions, grantResults);
     }
 }
