@@ -37,7 +37,7 @@ public class DetailActivity extends BaseActivity<MainPresenter.MainUiCallback> i
     @Override
     public void initData() {
         String detail_file_path = getIntent().getStringExtra("detail_file_path");
-        FileListPageFragment fragment = new FileListPageFragment(detail_file_path);
+        FileListPageFragment fragment = new FileListPageFragment();
 //        fragment.autoDeploymentTopNavisStack(detail_file_path);
 
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -119,7 +119,6 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
     private int mPosition = -1;
     private int mLastTimePosition = 0;
-    private String path;
 
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
@@ -168,9 +167,6 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
     };
 
     public FileListPageFragment() {
-    }
-    public FileListPageFragment(String path) {
-        this.path = path;
     }
 
     public void startAnim() {

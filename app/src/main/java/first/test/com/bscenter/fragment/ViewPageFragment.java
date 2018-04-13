@@ -1,13 +1,5 @@
 package first.test.com.bscenter.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-import org.lmw.demo.slidingtab.widget.PagerSlidingTabStrip;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,9 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.lmw.demo.slidingtab.widget.PagerSlidingTabStrip;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.event.BXXClearEvent;
-import first.test.com.bscenter.event.FaceClearEvent;
 
 
 public class ViewPageFragment extends Fragment {
