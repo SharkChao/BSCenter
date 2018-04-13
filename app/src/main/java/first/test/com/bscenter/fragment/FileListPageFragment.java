@@ -98,7 +98,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
     public String mRootPath = ResourceManager.mExternalStoragePath;
 
     private View mView = null;
-    private DetailActivity mActivity = null;
+    private MainActivity mActivity = null;
     private ViewPageFragment mViewPageFragment = null;
     private LinearLayout mLinearTopNavi = null;// 顶部目录导航
     private HorizontalScrollView mTopNaviScroll = null;// 顶部滚动部件
@@ -239,8 +239,8 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
     private void initView() {
 
-        mActivity = (DetailActivity) getActivity();
-//        mViewPageFragment = mActivity.getViewPageFragment();
+        mActivity = (MainActivity) getActivity();
+        mViewPageFragment = mActivity.getViewPageFragment();
 
         mLinearTopNavi = (LinearLayout) mView.findViewById(R.id.mLinearTopNavi);
         mTopNaviScroll = (HorizontalScrollView) mView.findViewById(R.id.mTopNaviScroll);
@@ -258,7 +258,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
         mListView.setOnItemRemoveListener(this);
         mListView.setOnItemClickListener(this);
-//        ((MainActivity) getActivity()).setOnBackPressedListener(this);
+        ((MainActivity) getActivity()).setOnBackPressedListener(this);
 
         Intent intent = new Intent(getActivity(),CopyFileService.class);
 //        intent.setAction(BIND_STRING);
@@ -949,5 +949,6 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
             mOperatorList.clear();
         }
     }
+
 
 }

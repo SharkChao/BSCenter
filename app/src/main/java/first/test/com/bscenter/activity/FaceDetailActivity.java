@@ -212,7 +212,9 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
                                 finish();
                                 Toast.makeText(FaceDetailActivity.this, "登陆成功!", Toast.LENGTH_SHORT).show();
                             }else {
-                                new EventBus().post(new FaceVerifyEvent());
+                               EventBus.getDefault().post(new FaceVerifyEvent());
+                                Toast.makeText(FaceDetailActivity.this, "登陆成功!", Toast.LENGTH_SHORT).show();
+                                finish();
                             }
 
                         }else {

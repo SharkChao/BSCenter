@@ -89,7 +89,7 @@ public class ViewPageFragment extends Fragment {
             }
         });
 
-        new EventBus().register(this);
+        EventBus.getDefault().register(this);
         return mView;
     }
     

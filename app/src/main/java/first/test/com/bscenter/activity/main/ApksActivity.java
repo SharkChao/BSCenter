@@ -83,6 +83,8 @@ public class ApksActivity extends Activity implements OnItemClickListener, OnIte
 
     private View mViewNothing = null;
     private PhotoPopupWindow mPopupWindow1;
+    private AlertDialog mAlertDialog;
+    private AlertDialog mAlertDialog1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -336,7 +338,8 @@ public class ApksActivity extends Activity implements OnItemClickListener, OnIte
         });
 
         builder.setView(contentView);
-        builder.create().show();
+        mAlertDialog = builder.create();
+        mAlertDialog.show();
     }
     /**
      * 跳转到密码处理界面
@@ -390,7 +393,8 @@ public class ApksActivity extends Activity implements OnItemClickListener, OnIte
         });
 
         builder.setView(contentView);
-        builder.create().show();
+        mAlertDialog1 = builder.create();
+        mAlertDialog1.show();
     }
 
     private void actionFaceActivity(int value){
@@ -503,7 +507,6 @@ public class ApksActivity extends Activity implements OnItemClickListener, OnIte
         mApks.remove(mChoosePosition);
         mAdapter.notifyDataSetChanged();
         mPopupWindow1.dismiss();
-
-        new EventBus().postSticky(new BXXClearEvent());
+        EventBus.getDefault().postSticky(new BXXClearEvent());
     }
 }

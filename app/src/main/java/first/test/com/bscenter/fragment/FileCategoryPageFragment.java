@@ -42,7 +42,7 @@ import first.test.com.bscenter.utils.TextUtil;
 import first.test.com.bscenter.views.PieChart;
 
 
-public class FileCategoryPageFragment extends Fragment implements OnClickListener, PieChart.OnSelectedLisenter {
+public class FileCategoryPageFragment extends Fragment implements OnClickListener, PieChart.OnSelectedLisenter, IOnBackPressed {
 
     private static final int MSG_SET_BASCI_CATEGORY_COUNT = 0x6001;
     private static final int MSG_SET_OTHER_CATEGORY_COUNT = 0x6002;
@@ -181,6 +181,17 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
         };
     };
 
+
+    @Override
+    public boolean onBackPressed() {
+
+        // 没在当前页
+        if (mViewPageFragment.getCurrentPageIndex() != 0) {
+            return true;
+        }
+            return true;
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.page_category, container, false);
 
@@ -256,7 +267,7 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        ((MainActivity) getActivity()).setOnBackPressedListener(this);
         mActivity = (MainActivity) getActivity();
         mViewPageFragment = mActivity.getViewPageFragment();
         mFileListPageFragment = mViewPageFragment.getFileListPageFragment();

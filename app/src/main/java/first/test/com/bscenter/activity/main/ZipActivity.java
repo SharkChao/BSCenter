@@ -558,7 +558,7 @@ public class ZipActivity extends Activity implements OnItemClickListener, OnItem
         mAdapter.notifyDataSetChanged();
         mPopupWindow1.dismiss();
 
-        new EventBus().postSticky(new BXXClearEvent());
+        EventBus.getDefault().postSticky(new BXXClearEvent());
     }
 
 }

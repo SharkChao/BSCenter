@@ -60,18 +60,33 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/mListViewFavorit"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="46dp"
-        android:background="#fff"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:footerDividersEnabled="false"
-        android:layout_above="@+id/mFavoriteBottomDelete"
-        android:layoutAnimation="@anim/favorite_list_anim_layout" >
-    </ListView>
+        android:gravity="center"
+        android:layout_above="@+id/mFavoriteBottomDelete">
+        <ListView
+            android:id="@+id/mListViewFavorit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:footerDividersEnabled="false"
+            android:layoutAnimation="@anim/favorite_list_anim_layout" >
+        </ListView>
+        <Button
+            android:id="@+id/btnJS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="解锁"
+            android:textColor="@color/white"
+            android:background="@drawable/iv_app_button_select"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+
 
     <LinearLayout
         android:id="@+id/mFavoriteBottomDelete"

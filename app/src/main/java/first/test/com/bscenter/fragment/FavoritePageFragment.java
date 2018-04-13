@@ -26,6 +26,7 @@ import com.kongqw.util.FaceUtil;
 import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.util.StringUtils;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -77,14 +78,19 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
     protected boolean isLoad = false;
     private PhotoPopupWindow mPopupWindow;
     private AlertDialog mAlertDialog;
+    private Button btnJS;
+    private AlertDialog mAlertDialog1;
+    private AlertDialog mAlertDialog2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.page_favorite, null);
 
+       EventBus.getDefault().register(this);
         mImageFavoriteSelectAll = (ImageView) mView.findViewById(R.id.mImageFavoriteSelectAll);
         mImageFavoriteSelectAll.setTag(false);
         mTvFavoriteSelectAll = (TextView) mView.findViewById(R.id.mTvFavoriteSelectAll);
+        btnJS = mView.findViewById(R.id.btnJS);
         mListView = (ListView) mView.findViewById(R.id.mListViewFavorit);
         mNothingView = mView.findViewById(R.id.nothingFavorite);
         
@@ -92,13 +98,19 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
         mFavoriteBottomDelete.setOnClickListener(this);
         mImgBtnBack =  (ImageButton) mView.findViewById(R.id.mImgBtnBack);
         mImgBtnBack.setOnClickListener(this);
-        
+
+        btnJS.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
         mLayoutSelectAll = mView.findViewById(R.id.mLayoutSelectAll);
         mLayoutSelectAll.setOnClickListener(this);
 
         mFavorites = ResourceManager.getAllFavorites();
         if(mFavorites.size() == 0) {
-            mNothingView.setVisibility(View.VISIBLE);
+            mNothingView.setVisibility(View.GONE);
         } else {
             mNothingView.setVisibility(View.GONE);
         }
@@ -110,11 +122,20 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
         isCanLoadData();
         return mView;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+//        new EventBus().unregister(this);
+    }
+
     /**
      * 当视图初始化并且对用户可见的时候去真正的加载数据
      */
     protected  void lazyLoad(){
         mListView.setVisibility(View.INVISIBLE);
+        btnJS.setVisibility(View.VISIBLE);
+        mLayoutSelectAll.setVisibility(View.GONE);
         showDialog();
     }
 
@@ -159,7 +180,7 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
     public void reLoadFavoriteList() {
         mFavorites = ResourceManager.getAllFavorites();
         if(mFavorites.size() == 0) {
-            mNothingView.setVisibility(View.VISIBLE);
+            mNothingView.setVisibility(View.GONE);
         } else {
             mNothingView.setVisibility(View.GONE);
         }
@@ -366,7 +387,8 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
         });
 
         builder.setView(contentView);
-        builder.create().show();
+        mAlertDialog2 = builder.create();
+        mAlertDialog2.show();
     }
     /**
      * 跳转到密码处理界面
@@ -420,7 +442,9 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
         });
 
         builder.setView(contentView);
-        builder.create().show();
+        mAlertDialog1 = builder.create();
+        mAlertDialog1.show();
+
     }
 
     private void actionFaceActivity(int value){
@@ -474,7 +498,7 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setTitle("提示")
                 .setView(view);
-        builder.setCancelable(false);
+        builder.setCancelable(true);
         mAlertDialog = builder.create();
         mAlertDialog.show();
     }
@@ -533,6 +557,14 @@ public class FavoritePageFragment extends Fragment implements FileListAdapter.On
     public void setAction(){
         mListView.setVisibility(View.VISIBLE);
        mAlertDialog.dismiss();
+       btnJS.setVisibility(View.GONE);
+        mLayoutSelectAll.setVisibility(View.VISIBLE);
+        if (mAlertDialog1 != null && mAlertDialog1.isShowing()){
+            mAlertDialog1.dismiss();
+        }
+        if (mAlertDialog2 != null && mAlertDialog2.isShowing()){
+            mAlertDialog2.dismiss();
+        }
     }
 
 

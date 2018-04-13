@@ -547,7 +547,7 @@ public class ImageWallActivity extends Activity implements OnItemClickListener, 
         mAdapter.notifyDataSetChanged();
         mPopupWindow1.dismiss();
 
-        new EventBus().postSticky(new BXXClearEvent());
+       EventBus.getDefault().postSticky(new BXXClearEvent());
     }
 
 }
