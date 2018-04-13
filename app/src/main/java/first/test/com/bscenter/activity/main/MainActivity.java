@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -21,7 +22,7 @@ import first.test.com.bscenter.fragment.ViewPageFragment;
 import first.test.com.bscenter.views.SlidingMenu;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     SlidingMenu mSlidingMenu = null;
     LeftMenuFragment mLeftFragment = null;
@@ -33,6 +34,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
         init();
         initListener();
@@ -91,11 +93,11 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void showLeft() {
-        mSlidingMenu.showLeftView();
+//        mSlidingMenu.showLeftView();
     }
     
     public void hideLeft() {
-        mSlidingMenu.hideLeft();
+//        mSlidingMenu.hideLeft();
     }
 
     @Override

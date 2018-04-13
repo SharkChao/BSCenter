@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import first.test.com.bscenter.R;
+import first.test.com.bscenter.activity.main.DetailActivity;
 import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.adapter.FileListAdapter;
 import first.test.com.bscenter.core.common.FileComparator;
@@ -97,7 +98,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
     public String mRootPath = ResourceManager.mExternalStoragePath;
 
     private View mView = null;
-    private MainActivity mActivity = null;
+    private DetailActivity mActivity = null;
     private ViewPageFragment mViewPageFragment = null;
     private LinearLayout mLinearTopNavi = null;// 顶部目录导航
     private HorizontalScrollView mTopNaviScroll = null;// 顶部滚动部件
@@ -118,6 +119,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
     private int mPosition = -1;
     private int mLastTimePosition = 0;
+    private String path;
 
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
@@ -125,7 +127,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         public void handleMessage(Message msg) {
             if (msg.what == MSG_SHOW_PROGRESS) {
                 if (mProgressDialog == null) {
-                    mProgressDialog = UiUtil.createLoadingDialog(mView.getContext(), "正在玩命加载...");
+                    mProgressDialog = UiUtil.createLoadingDialog(getActivity(), "正在玩命加载...");
                     mProgressDialog.show();
                 }
             } else if (msg.what == MSG_PRE_LOAD) {
@@ -165,6 +167,12 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         }
     };
 
+    public FileListPageFragment() {
+    }
+    public FileListPageFragment(String path) {
+        this.path = path;
+    }
+
     public void startAnim() {
         mListView.startLayoutAnimation();
     }
@@ -185,9 +193,9 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.file_list_frame, null);
-        mAdapter = new FileListAdapter(mView.getContext(), mFileItems);
-
+        mView = inflater.inflate(R.layout.file_list_frame, container,false);
+        mAdapter = new FileListAdapter(getActivity(), mFileItems);
+//        mFileItems.add();
         mConnection = new CopyFileConnection();
         initView();
 
@@ -235,8 +243,8 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
     private void initView() {
 
-        mActivity = (MainActivity) getActivity();
-        mViewPageFragment = mActivity.getViewPageFragment();
+        mActivity = (DetailActivity) getActivity();
+//        mViewPageFragment = mActivity.getViewPageFragment();
 
         mLinearTopNavi = (LinearLayout) mView.findViewById(R.id.mLinearTopNavi);
         mTopNaviScroll = (HorizontalScrollView) mView.findViewById(R.id.mTopNaviScroll);
@@ -254,7 +262,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
         mListView.setOnItemRemoveListener(this);
         mListView.setOnItemClickListener(this);
-        ((MainActivity) getActivity()).setOnBackPressedListener(this);
+//        ((MainActivity) getActivity()).setOnBackPressedListener(this);
 
         Intent intent = new Intent(getActivity(),CopyFileService.class);
 //        intent.setAction(BIND_STRING);
@@ -412,7 +420,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         String path = mFileItems.get(position).getPath();
 
         if (mOperatorList.contains(path)) {
-            Toast.makeText(mView.getContext(), "你在开玩笑吗？", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "你在开玩笑吗？", Toast.LENGTH_SHORT).show();
             return;
         }
         File file = new File(path);
@@ -454,7 +462,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
     /* 设置底部导航条 */
     private void addToNaviList(String path) {
-        View naviItemView = LayoutInflater.from(mView.getContext()).inflate(R.layout.file_navi_item, null);
+        View naviItemView = LayoutInflater.from(getActivity()).inflate(R.layout.file_navi_item, null);
         final TextView tv = (TextView) naviItemView.findViewById(R.id.mTvNaviItem);
         String text = FileUtils.getFileName(path);
         if (text.endsWith(FileUtils.getFileName(mRootPath))) {
@@ -536,7 +544,9 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
     // 自动生成顶部导航
     public void autoDeploymentTopNavisStack(String path) {
-        mLinearTopNavi.removeAllViews();
+        if (mLinearTopNavi != null){
+            mLinearTopNavi.removeAllViews();
+        }
         mTopNaviInfoStack.clear();
         mCheckedList.clear();
         mFileItems.clear();
@@ -659,7 +669,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
                 break;
 
             case R.id.mToolBarSetting:
-                mActivity.showLeft();
+//                mActivity.showLeft();
                 break;
 
             case R.id.mToolBarSort:
@@ -672,10 +682,10 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
         private void addToFavorite() {
             if (mCheckedList.size() == 0) {
-                Toast.makeText(mView.getContext(), "请先选择收藏的文件", 0).show();
+                Toast.makeText(getActivity(), "请先选择收藏的文件", 0).show();
                 return;
             }
-            FavoriteDao dao = DaoFactory.getFavoriteDao(mView.getContext());
+            FavoriteDao dao = DaoFactory.getFavoriteDao(getActivity());
             List<Favorite> favorites = new ArrayList<Favorite>();
             for (int i = 0; i < mCheckedList.size(); i++) {
                 if (null != dao.findFavoriteByFullPath(mCheckedList.get(i))) {
@@ -718,10 +728,10 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
         private boolean checkOperatorPath(String empty, String multi) {
             if (mOperatorPaths.size() > 1) {
-                Toast.makeText(mView.getContext(), empty, 0).show();
+                Toast.makeText(getActivity(), empty, 0).show();
                 return false;
             } else if (mOperatorPaths.size() == 0) {
-                Toast.makeText(mView.getContext(), multi, 0).show();
+                Toast.makeText(getActivity(), multi, 0).show();
                 return false;
             }
             return true;
@@ -732,20 +742,20 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
             if (!checkOperatorPath("请选择一个要查看的文件", "暂不支持查看多个文件")) {
                 return;
             }
-            FileInfoDialog dialog = new FileInfoDialog(mView.getContext(), mOperatorPaths.get(0));
+            FileInfoDialog dialog = new FileInfoDialog(getActivity(), mOperatorPaths.get(0));
             dialog.show();
             reset();
         }
 
         // 排序
         private void sort() {
-            SortDialog dialog = new SortDialog(mView.getContext(), mFileItems, mAdapter);
+            SortDialog dialog = new SortDialog(getActivity(), mFileItems, mAdapter);
             dialog.show();
         }
 
         // 新建
         private void newFile() {
-            NewFileDialog dialog = new NewFileDialog(mView.getContext(), mFileItems, getCurrentPath(), mFragment);
+            NewFileDialog dialog = new NewFileDialog(getActivity(), mFileItems, getCurrentPath(), mFragment);
             dialog.show();
         }
 
@@ -753,7 +763,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         private void move() {
 
             if (mCheckedList.size() == 0) {
-                Toast.makeText(mView.getContext(), "请先选择一个要移动的文件", 0).show();
+                Toast.makeText(getActivity(), "请先选择一个要移动的文件", 0).show();
                 return;
             }
             mMoveBottomChooseBar.show();
@@ -768,7 +778,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         private void copy() {
 
             if (mCheckedList.size() == 0) {
-                Toast.makeText(mView.getContext(), "请先选择一个要复制的文件", 0).show();
+                Toast.makeText(getActivity(), "请先选择一个要复制的文件", 0).show();
                 return;
             }
             mCopyBottomChooseBar.show();
@@ -780,11 +790,11 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         // 删除文件
         public void deleteFiles() {
             if (mOperatorPaths.size() == 0) {
-                Toast.makeText(mView.getContext(), "请先选择一个要删除的文件", 0).show();
+                Toast.makeText(getActivity(), "请先选择一个要删除的文件", 0).show();
                 return;
             }
 
-            DeleteFileDialog dialog = new DeleteFileDialog(mView.getContext(), getActivity(), mOperatorPaths);
+            DeleteFileDialog dialog = new DeleteFileDialog(getActivity(), getActivity(), mOperatorPaths);
             dialog.setOnDialogBtnClickListener(new IOnDialogBtnClickListener() {
 
                 @Override
@@ -807,7 +817,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         public void deleteFile(String name, final int position) {
             List<String> temp = new ArrayList<String>();
             temp.add(name);
-            DeleteFileDialog dialog = new DeleteFileDialog(mView.getContext(), getActivity(), temp);
+            DeleteFileDialog dialog = new DeleteFileDialog(getActivity(), getActivity(), temp);
             dialog.setOnDialogBtnClickListener(new IOnDialogBtnClickListener() {
 
                 @Override
@@ -831,14 +841,14 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
         private void rename() {
             if (mOperatorPaths.size() > 1) {
-                Toast.makeText(mView.getContext(), "不支持对多个文件命名", 0).show();
+                Toast.makeText(getActivity(), "不支持对多个文件命名", 0).show();
                 return;
             } else if (mOperatorPaths.size() == 0) {
-                Toast.makeText(mView.getContext(), "请先选择一个要操作的文件", 0).show();
+                Toast.makeText(getActivity(), "请先选择一个要操作的文件", 0).show();
                 return;
             }
             String path = mOperatorPaths.get(0);
-            RenameDialog dialog = new RenameDialog(mView.getContext(), mFileItems, path);
+            RenameDialog dialog = new RenameDialog(getActivity(), mFileItems, path);
             dialog.setOnDialogBtnClickListener(this);
             dialog.show();
 
@@ -848,7 +858,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         public void onOkClick(View view, String newPath) {
             boolean result = FileUtils.rename(mOperatorPaths.get(0), newPath);
             if (result) {
-                Toast.makeText(mView.getContext(), "重命名成功！", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "重命名成功！", Toast.LENGTH_LONG).show();
                 refresh();
                 if (this.mListView != null) {
                     int position = FileUtils.getPositionInFileList(mFileItems, newPath) + 4;
@@ -856,7 +866,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
                 }
                 mOperatorPaths.clear();
             } else {
-                Toast.makeText(mView.getContext(), "重命名失败！", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "重命名失败！", Toast.LENGTH_LONG).show();
                 mOperatorPaths.clear();
             }
         }
@@ -897,7 +907,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
 
         @Override
         public void onCancel(View v) {
-            // Toast.makeText(mView.getContext(), "取消复制", 0).show();
+            // Toast.makeText(getActivity(), "取消复制", 0).show();
         }
 
     }
@@ -933,7 +943,7 @@ public class FileListPageFragment extends Fragment implements SwipListView.OnSwi
         public void onEnsure(View v) {
             String targetPath = getCurrentPath();
             int failCount = FileUtils.moveTo(mOperatorList, targetPath);
-            Toast.makeText(mView.getContext(), "移动" + mOperatorList.size() + "个，失败" + failCount + "个", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "移动" + mOperatorList.size() + "个，失败" + failCount + "个", Toast.LENGTH_SHORT).show();
             mBottomMenu.hide();
             refresh();
         }

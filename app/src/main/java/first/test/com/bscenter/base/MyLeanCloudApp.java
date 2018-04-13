@@ -22,6 +22,8 @@ import first.test.com.bscenter.dao.impl.FileAppNameDao;
 import first.test.com.bscenter.dao.impl.FileTypeDao;
 import first.test.com.bscenter.model.Favorite;
 import first.test.com.bscenter.presenter.MainPresenter;
+import first.test.com.bscenter.utils.PermisionUtils;
+import first.test.com.bscenter.utils.PermissionsManager;
 
 //import android.support.multidex.MultiDex;
 
@@ -48,7 +50,7 @@ public class MyLeanCloudApp extends Application{
         mAppSeft = this;
         PACKAGE_NAME = getPackageName();
 
-        deployeDataBase(getApplicationContext(), false);
+//        deployeDataBase(getApplicationContext(), false);
 
         initResource();
     }
@@ -67,6 +69,7 @@ public class MyLeanCloudApp extends Application{
 
 
     public static void initialFavoriteDatabase() {
+        PermisionUtils.verifyStoragePermissions(BaseActivity.currentActivity);
         File file = new File("/");
         int size = file.listFiles().length;
         Favorite favoriteRoot = new Favorite("/", "Root目录", "根目录", FileType.TYPE_FOLDER, System.currentTimeMillis(), size, "安装时加入");

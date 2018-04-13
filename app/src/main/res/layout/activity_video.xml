@@ -10,13 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
-        android:background="@color/color_green_1" >
+        android:background="@color/colorPrimary" >
 
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="45dp"
             android:background="@drawable/top_selector"
             android:onClick="back"
+            android:visibility="gone"
             android:src="@drawable/ab_ic_back_light_pressed" />
 
         <ImageView
@@ -32,7 +33,7 @@
             android:layout_marginLeft="8dp"
             android:fastScrollEnabled="true"
             android:gravity="center_vertical"
-            android:text="这里全是人生"
+            android:text="所有视频"
             android:textColor="@color/white"
             android:textSize="18sp" />
     </LinearLayout>

@@ -9,14 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
-        android:background="@color/color_green_1" >
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical">
 
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="45dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginLeft="@dimen/spacing_10"
             android:background="@drawable/top_selector"
             android:onClick="back"
-            android:src="@drawable/ab_ic_back_light_pressed" />
+            android:visibility="gone"
+            android:src="@mipmap/wn_iv_top_back" />
 
         <ImageView
             android:layout_width="3dp"

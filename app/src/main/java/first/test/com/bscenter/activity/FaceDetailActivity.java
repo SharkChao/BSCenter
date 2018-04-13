@@ -20,12 +20,14 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 
 import first.test.com.bscenter.R;
+import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.constants.Constants;
 import first.test.com.bscenter.databinding.ActivityFaceDetailBinding;
 import first.test.com.bscenter.event.FaceClearEvent;
 import first.test.com.bscenter.event.FaceSetEvent;
+import first.test.com.bscenter.event.FaceVerifyEvent;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.PermisionUtils;
 
@@ -42,16 +44,18 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
     private CameraFaceDetectionView mCameraFaceDetectionView;
     private boolean isCamera = true;
     private TextView btnCamera;
+    private int mValue;
 
     @Override
     public void initTitle() {
         isShowToolBar(true);
         mMode = getIntent().getIntExtra("face_key", 0);
+        mValue = (int) getIntent().getIntExtra(Constants.INTENT_type_KEY,0);
     }
 
     @Override
     public void initView(ViewDataBinding viewDataBinding) {
-        PermisionUtils.verifyCameraPermissions(this);
+
         mBinding = (ActivityFaceDetailBinding) viewDataBinding;
         tvHint = mBinding.tvHint;
         btnCamera = mBinding.btnCamera;
@@ -60,6 +64,7 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
 
     @Override
     public void initData() {
+
         setCenterMode();
     }
 
@@ -173,6 +178,7 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
                                             if (isSave && isSave2){
                                                 Toast.makeText(FaceDetailActivity.this, "清除人脸特征成功!", Toast.LENGTH_SHORT).show();
                                                 EventBus.getDefault().post(new FaceClearEvent());
+                                                finish();
                                             }
                                         }
                                     }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -200,10 +206,15 @@ public class FaceDetailActivity extends BaseActivity<MainPresenter.MainUiCallbac
                     @Override
                     public void run() {
                         if (score >= 60){
-                            Intent intent = new Intent(FaceDetailActivity.this,HomeActivity.class);
-                            startActivity(intent);
-                            finish();
-                            Toast.makeText(FaceDetailActivity.this, "登陆成功!", Toast.LENGTH_SHORT).show();
+                            if (mValue == 0){
+                                Intent intent = new Intent(FaceDetailActivity.this,MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                                Toast.makeText(FaceDetailActivity.this, "登陆成功!", Toast.LENGTH_SHORT).show();
+                            }else {
+                                new EventBus().post(new FaceVerifyEvent());
+                            }
+
                         }else {
                             Toast.makeText(FaceDetailActivity.this, "人脸相似度为:"+score+",系统认定为不匹配!", Toast.LENGTH_LONG).show();
                         }

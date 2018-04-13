@@ -116,7 +116,7 @@ public class FileInfoDialog extends Dialog implements OnClickListener {
         mBtnFileInfoGoDir.setOnClickListener(this);
 
         if (mIsShowGotoBtn) {
-            mBtnFileInfoGoDir.setVisibility(View.VISIBLE);
+            mBtnFileInfoGoDir.setVisibility(View.GONE);
         }
 
         this.setTitle("文件详情");

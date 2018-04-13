@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
-        android:background="@color/color_green_1" >
+        android:background="@color/gray_2" >
 
         <ImageButton
             android:id="@+id/mImgBtnBack"
@@ -29,7 +29,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="8dp"
             android:gravity="center_vertical"
-            android:text="我的收藏，你值得拥有"
+            android:text="保险文件，一键全选"
             android:textColor="@color/white"
             android:textSize="18sp" />
     </LinearLayout>
@@ -90,7 +90,15 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_gravity="center"
+            android:visibility="gone"
             android:src="@drawable/ic_delete_red" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:text="从保险柜移除"
+            />
     </LinearLayout>
     
     <include

@@ -5,6 +5,10 @@ import java.util.Locale;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
+
+import first.test.com.bscenter.base.MyLeanCloudApp;
 
 public class OpenFileUtil {
 
@@ -47,7 +51,18 @@ public class OpenFileUtil {
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(new File(param));
+
+
+        Uri uri;
+        // 判断版本大于等于7.0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "*/*");
         return intent;
     }
@@ -58,7 +73,15 @@ public class OpenFileUtil {
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "application/vnd.android.package-archive");
         return intent;
     }
@@ -70,7 +93,17 @@ public class OpenFileUtil {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("oneshot", 0);
         intent.putExtra("configchange", 0);
-        Uri uri = Uri.fromFile(new File(param));
+
+
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "video/*");
         return intent;
     }
@@ -82,7 +115,15 @@ public class OpenFileUtil {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("oneshot", 0);
         intent.putExtra("configchange", 0);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "audio/*");
         return intent;
     }
@@ -102,7 +143,15 @@ public class OpenFileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "image/*");
         return intent;
     }
@@ -113,7 +162,15 @@ public class OpenFileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
         return intent;
     }
@@ -124,7 +181,15 @@ public class OpenFileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "application/vnd.ms-excel");
         return intent;
     }
@@ -135,7 +200,15 @@ public class OpenFileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "application/msword");
         return intent;
     }
@@ -146,7 +219,15 @@ public class OpenFileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "application/x-chm");
         return intent;
     }
@@ -161,7 +242,15 @@ public class OpenFileUtil {
             Uri uri1 = Uri.parse(param);
             intent.setDataAndType(uri1, "text/plain");
         } else {
-            Uri uri2 = Uri.fromFile(new File(param));
+            Uri uri2;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+                uri2 = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+                // 给目标应用一个临时授权
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                uri2 = Uri.fromFile(new File(param));
+            }
             intent.setDataAndType(uri2, "text/plain");
         }
         return intent;
@@ -173,7 +262,15 @@ public class OpenFileUtil {
         Intent intent = new Intent("android.intent.action.VIEW");
         intent.addCategory("android.intent.category.DEFAULT");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromFile(new File(param));
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            uri = FileProvider.getUriForFile(MyLeanCloudApp.getInstance(), "com.test.bscenter.provider", new File(param));
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(new File(param));
+        }
         intent.setDataAndType(uri, "application/pdf");
         return intent;
     }

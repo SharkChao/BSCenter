@@ -24,6 +24,7 @@ public class PhotoPopupWindow extends PopupWindow {
     private View.OnClickListener mListener2; // 相册选取的点击监听器
     private View.OnClickListener mListener3; // 相册选取的点击监听器
     private View.OnClickListener mListener4; // 相册选取的点击监听器
+    private Button mBtn_cancel;
 
     public PhotoPopupWindow(Activity context, View.OnClickListener listener1, View.OnClickListener listener2,View.OnClickListener listener3,View.OnClickListener listener4) {
         super(context);
@@ -46,13 +47,13 @@ public class PhotoPopupWindow extends PopupWindow {
         Button btn2 = (Button) mView.findViewById(R.id.btn2);
         Button btn3 = (Button) mView.findViewById(R.id.btn3);
         Button btn4 = (Button) mView.findViewById(R.id.btn4);
-        Button btn_cancel = (Button) mView.findViewById(R.id.icon_btn_cancel);
+        mBtn_cancel = (Button) mView.findViewById(R.id.icon_btn_cancel);
 
         btn1.setOnClickListener(mListener1);
         btn2.setOnClickListener(mListener2);
         btn3.setOnClickListener(mListener3);
         btn4.setOnClickListener(mListener4);
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
+        mBtn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
@@ -77,11 +78,16 @@ public class PhotoPopupWindow extends PopupWindow {
                 int y = (int) event.getY();
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (y < height) {
-                        dismiss();
+//                        dismiss();
                     }
                 }
                 return true;
             }
         });
     }
+
+    public void showCancle(boolean isShow){
+        mBtn_cancel.setVisibility(isShow? View.VISIBLE:View.GONE);
+    }
+
 }

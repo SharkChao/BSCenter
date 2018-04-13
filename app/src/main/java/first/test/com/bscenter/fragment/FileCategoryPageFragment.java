@@ -2,6 +2,7 @@ package first.test.com.bscenter.fragment;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.ContentResolver;
@@ -33,6 +34,8 @@ import first.test.com.bscenter.core.common.FileType;
 import first.test.com.bscenter.core.common.MediaResourceManager;
 import first.test.com.bscenter.core.engine.ResourceManager;
 import first.test.com.bscenter.model.Audio;
+import first.test.com.bscenter.model.Favorite;
+import first.test.com.bscenter.model.Picture;
 import first.test.com.bscenter.model.Video;
 import first.test.com.bscenter.utils.FileUtils;
 import first.test.com.bscenter.utils.TextUtil;
@@ -163,15 +166,18 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
         }
 
         private void setAllCateCount() {
-            mTvPictureCount.setText("(" + mPictrues.size() + ")");
-            mTvVideoCount.setText("(" + mVideos.size() + ")");
-            mTvAudioCount.setText("(" + mAudios.size() + ")");
-            mTvDownloadCount.setText("(" + mDownloads.size() + ")");
-            mTvBluetoothCount.setText("(" + mBluetooths.size() + ")");
-            mTvApplicationsCount.setText("(" + mApplicationCount + ")");
-            mTvDocumentCount.setText("(" + mDocuments.size() + ")");
-            mTvZipsCount.setText("(" + mZips.size() + ")");
-            mTvApksCount.setText("(" + mApks.size() + ")");
+            if (mPictrues != null &&mVideos!= null &&mAudios!= null &&mDocuments!= null &&mZips!= null &&mApks!= null){
+                mTvPictureCount.setText("(" + mPictrues.size() + ")");
+                mTvVideoCount.setText("(" + mVideos.size() + ")");
+                mTvAudioCount.setText("(" + mAudios.size() + ")");
+//            mTvDownloadCount.setText("(" + mDownloads.size() + ")");
+//            mTvBluetoothCount.setText("(" + mBluetooths.size() + ")");
+                mTvApplicationsCount.setText("(" + mApplicationCount + ")");
+                mTvDocumentCount.setText("(" + mDocuments.size() + ")");
+                mTvZipsCount.setText("(" + mZips.size() + ")");
+                mTvApksCount.setText("(" + mApks.size() + ")");
+            }
+
         };
     };
 
@@ -308,6 +314,7 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
         public void run() {
             mAllCateSize = 0;
             mAudios = MediaResourceManager.getAudiosFromMedia();
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
             mAllCateSize += mAllAudioSize;
 
             mVideos = MediaResourceManager.getVideosFromMedia();
@@ -369,6 +376,39 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                     }
                 }
 
+                for (Favorite favorite:allFavorites){
+                    for (Audio audio:mAudios){
+                        if (favorite.getCanonicalPath().equalsIgnoreCase(audio.getPath())){
+                            mAudios.remove(audio);
+                        }
+                    }
+                    for (Video audio:mVideos){
+                        if (favorite.getCanonicalPath().equalsIgnoreCase(audio.getPath())){
+                            mVideos.remove(audio);
+                        }
+                    }
+                    for (String audio:mPictrues){
+                        if (favorite.getCanonicalPath().equalsIgnoreCase(audio)){
+                            mPictrues.remove(audio);
+                        }
+                    }
+                    for (String audio:mDocuments){
+                        if (favorite.getCanonicalPath().equalsIgnoreCase(audio)){
+                            mDocuments.remove(audio);
+                        }
+                    }
+                    for (String audio:mZips){
+                        if (favorite.getCanonicalPath().equalsIgnoreCase(audio)){
+                            mZips.remove(audio);
+                        }
+                    }
+                    for (String audio:mApks){
+                        if (favorite.getCanonicalPath().equalsIgnoreCase(audio)){
+                            mApks.remove(audio);
+                        }
+                    }
+
+                }
                 System.out.println("文档：" + mAllDocumentsSize + "压缩包：" + mAllZipsSize + "安装包+ " + mAllApkSize);
 
             } catch (Exception e) {
@@ -384,9 +424,12 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
 
     public void setAbstractText() {
         ResourceManager.calcStorageSize();
-        mTvCateTotalSize.setText("存储空间：" + TextUtil.getSizeSting(ResourceManager.mToalBytes));
-        mTvCateUsedSize.setText("已用空间：" + TextUtil.getSizeSting(ResourceManager.mUsedBytes));
-        mTvCateFreeSize.setText("剩余空间：" + TextUtil.getSizeSting(ResourceManager.mFreeBytes));
+        if (mTvCateTotalSize!= null &&mTvCateUsedSize != null &&mTvCateFreeSize!= null ){
+            mTvCateTotalSize.setText("存储空间：" + TextUtil.getSizeSting(ResourceManager.mToalBytes));
+            mTvCateUsedSize.setText("已用空间：" + TextUtil.getSizeSting(ResourceManager.mUsedBytes));
+            mTvCateFreeSize.setText("剩余空间：" + TextUtil.getSizeSting(ResourceManager.mFreeBytes));
+        }
+
     }
 
     public void setDetailText() {
@@ -513,7 +556,6 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     /**
@@ -549,6 +591,15 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                     i--;
                 }
             }
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
+            for (Favorite favorite:allFavorites){
+                for (Iterator<String> ite = mPictrues.iterator(); ite.hasNext();){
+                    String next = ite.next();
+                    if (favorite.getCanonicalPath().equalsIgnoreCase(next)){
+                        ite.remove();
+                    }
+                }
+            }
         }
     }
 
@@ -562,6 +613,16 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                     mVideos.remove(i);
                     i--;
                 }
+            }
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
+            for (Favorite favorite:allFavorites){
+                for (Iterator<Video> ite = mVideos.iterator(); ite.hasNext();){
+                    Video next = ite.next();
+                    if (favorite.getCanonicalPath().equalsIgnoreCase(next.getPath())){
+                        ite.remove();
+                    }
+                }
+
             }
         }
     }
@@ -577,6 +638,16 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                     i--;
                 }
             }
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
+            for (Favorite favorite:allFavorites){
+                for (Iterator<Audio> ite = mAudios.iterator(); ite.hasNext();){
+                    Audio next = ite.next();
+                    if (favorite.getCanonicalPath().equalsIgnoreCase(next.getPath())){
+                        ite.remove();
+                    }
+                }
+
+            }
         }
     }
 
@@ -588,6 +659,17 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                     mDocuments.remove(i);
                     i--;
                 }
+            }
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
+            for (Favorite favorite:allFavorites){
+
+                for (Iterator<String> ite = mDocuments.iterator(); ite.hasNext();){
+                    String next = ite.next();
+                    if (favorite.getCanonicalPath().equalsIgnoreCase(next)){
+                        ite.remove();
+                    }
+                }
+
             }
         }
     }
@@ -601,7 +683,17 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                     i--;
                 }
             }
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
+            for (Favorite favorite:allFavorites){
+                for (Iterator<String> ite = mZips.iterator(); ite.hasNext();){
+                    String next = ite.next();
+                    if (favorite.getCanonicalPath().equalsIgnoreCase(next)){
+                        ite.remove();
+                    }
+                }
+            }
         }
+
     }
 
     public void checkApks() {
@@ -611,6 +703,15 @@ public class FileCategoryPageFragment extends Fragment implements OnClickListene
                 if (!file.exists()) {
                     mApks.remove(i);
                     i--;
+                }
+            }
+            List<Favorite> allFavorites = ResourceManager.getAllFavorites();
+            for (Favorite favorite:allFavorites){
+                for (Iterator<String> ite = mApks.iterator(); ite.hasNext();){
+                    String next = ite.next();
+                    if (favorite.getCanonicalPath().equalsIgnoreCase(next)){
+                        ite.remove();
+                    }
                 }
             }
         }

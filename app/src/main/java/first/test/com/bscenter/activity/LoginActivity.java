@@ -1,9 +1,12 @@
 package first.test.com.bscenter.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.graphics.Bitmap;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +23,26 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 import first.test.com.bscenter.BuildConfig;
 import first.test.com.bscenter.R;
 import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.activity.main.WelcomActivity;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
+import first.test.com.bscenter.base.MyLeanCloudApp;
 import first.test.com.bscenter.constants.Constants;
+import first.test.com.bscenter.core.common.FileType;
+import first.test.com.bscenter.core.engine.ResourceManager;
+import first.test.com.bscenter.dao.DaoFactory;
+import first.test.com.bscenter.dao.impl.FavoriteDao;
+import first.test.com.bscenter.dao.impl.FileAppNameDao;
+import first.test.com.bscenter.dao.impl.FileTypeDao;
 import first.test.com.bscenter.databinding.ActivityLoginBinding;
 import first.test.com.bscenter.event.FaceClearEvent;
 import first.test.com.bscenter.event.FaceSetEvent;
@@ -36,15 +52,18 @@ import first.test.com.bscenter.greendao.DaoMaster;
 import first.test.com.bscenter.greendao.DaoSession;
 import first.test.com.bscenter.greendao.GreenDaoManager;
 import first.test.com.bscenter.greendao.UserDao;
+import first.test.com.bscenter.model.Favorite;
 import first.test.com.bscenter.model.User;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.CommonUtil;
 import first.test.com.bscenter.utils.PasswordUtil;
+import first.test.com.bscenter.utils.PermisionUtils;
 import first.test.com.bscenter.views.FingerPrinterView;
 import first.test.com.bscenter.views.PhotoPopupWindow;
 import io.reactivex.observers.DisposableObserver;
 import zwh.com.lib.FPerException;
 import zwh.com.lib.RxFingerPrinter;
+
 
 /**
  * Created by Admin on 2018/4/11.
@@ -61,6 +80,11 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     private Button mRvSetting;
     private Button mRvSettingFace;
 //    private PermissionsManager mPermissionsManager;
+
+    public static Map<String, int[]> mExtensionTypeMap = null;
+    public static Map<String, String> mAppNameMap = null;
+    private static final String TAG = "DeploymentOperation";
+    private static final String DATABASE_NAME = "appdirname.db";
 
     @Override
     public void initTitle() {
@@ -80,6 +104,8 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     @Override
     public void initData() {
         EventBus.getDefault().register(this);
+        deployeDataBase(getApplicationContext(), false);
+//        initResource();
     }
 
     @Override
@@ -88,6 +114,135 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         EventBus.getDefault().unregister(this);
     }
 
+
+    public  void initialFavoriteDatabase() {
+//        PermisionUtils.verifyStoragePermissions(BaseActivity.currentActivity);
+        File file = new File("/");
+        int size = 0;
+        if(file != null && file.listFiles() != null){
+             size = file.listFiles().length;
+        }
+        Favorite favoriteRoot = new Favorite("/", "Root目录", "根目录", FileType.TYPE_FOLDER, System.currentTimeMillis(), size, "安装时加入");
+        FavoriteDao dao = DaoFactory.getFavoriteDao(MyLeanCloudApp.getInstance());
+//        dao.insertFavorite(favoriteRoot);
+
+        boolean sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+        if (sdCardExist) {
+            file = Environment.getExternalStorageDirectory();
+            if(file != null && file.list() != null){
+                size = file.list().length;
+            }
+            try {
+                Favorite favoriteStorage = new Favorite(file.getCanonicalPath(), "存储卡", "存储卡", FileType.TYPE_FOLDER, System.currentTimeMillis(),
+                        size, "外部存储卡");
+//                dao.insertFavorite(favoriteStorage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+
+    /**
+     * 强制要求重新加载
+     *
+     * @param context
+     * @param isForced
+     */
+    private void deployeDataBase(Context context, boolean isForced) {
+        PermisionUtils.verifyStoragePermissions(this);
+        File dir = new File(ResourceManager.DATABASES_DIR);
+        if (!dir.exists() || isForced) {
+            try {
+                dir.mkdir();
+            } catch (Exception e) {
+                Log.e(TAG, "--->创建数据库目录失败");
+                e.printStackTrace();
+            }
+        }
+
+        File dest = new File(dir, DATABASE_NAME);
+        if (dest.exists() && !isForced) {
+            return;
+        }
+
+        FileOutputStream out = null;
+        InputStream in = null;
+
+        try {
+            if (dest.exists()) {
+                dest.delete();
+            }
+
+            dest.createNewFile();
+            in = context.getAssets().open(DATABASE_NAME, Context.MODE_PRIVATE);
+            int size = in.available();
+            byte buf[] = new byte[size];
+            in.read(buf);
+            out = new FileOutputStream(dest);
+            out.write(buf);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Log.d(TAG, "--->拷贝数据库成功！");
+
+        initialFavoriteDatabase();
+    }
+
+    // 加载文件路径对应的应用名
+    private void loadAppNameMap() {
+        if (mAppNameMap != null) {
+            mAppNameMap.clear();
+        }
+        FileAppNameDao dao = DaoFactory.getFileAppNameDao(getApplicationContext());
+        mAppNameMap = dao.findAllAppName();
+    }
+
+    private void initResource() {
+        loadExtesionTypeMap();
+        loadAppNameMap();
+        loadResourceManager(getApplicationContext());
+    }
+
+    private void loadResourceManager(Context applicationContext) {
+
+    }
+
+    /**
+     * 加载扩展名对应文件数据类型
+     */
+    private void loadExtesionTypeMap() {
+        if (mExtensionTypeMap != null) {
+            mExtensionTypeMap.clear();
+        }
+        FileTypeDao dao = DaoFactory.getFileTypeDao(getApplicationContext());
+        mExtensionTypeMap = dao.getAllExtensionFileTypeMap();
+        // showMap(mExtensionTypeMap);
+    }
+
+    private void showMap(Map<String, int[]> map) {
+        for (String key : map.keySet()) {
+            System.out.println("扩展名：" + key + " 类型： " + map.get(key)[0] + ", 类别：" + map.get(key)[1]);
+        }
+    }
     @Override
     protected void initEvent() {
 
@@ -172,7 +327,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 if (state == FingerPrinterView.STATE_CORRECT_PWD) {
                     Toast.makeText(LoginActivity.this, "指纹识别成功", Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
-                    Intent intent = new Intent(LoginActivity.this,HomeActivity.class);
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -280,6 +435,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         }
         Intent intent = new Intent(LoginActivity.this, GestureDetailActivity.class);
         intent.putExtra(Constants.INTENT_SECONDACTIVITY_KEY, mode);
+        intent.putExtra(Constants.INTENT_type_KEY, 0);
         startActivity(intent);
     }
 
@@ -324,6 +480,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
     private void actionFaceActivity(int value){
         // 要校验的权限
+        PermisionUtils.verifyCameraPermissions(this);
         if (value != Constants.FACE_MODE_SET) {
             Bitmap bitmap = FaceUtil.getImage(this, Constants.FACE_FILE_NAME_SAVE);
             if (!CommonUtil.isNotEmpty(bitmap)) {
@@ -333,6 +490,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         }
         Intent intent = new Intent(LoginActivity.this,FaceDetailActivity.class);
         intent.putExtra("face_key",value);
+        intent.putExtra(Constants.INTENT_type_KEY, 0);
         startActivity(intent);
 
     }

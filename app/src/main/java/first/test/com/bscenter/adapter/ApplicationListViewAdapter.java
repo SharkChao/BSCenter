@@ -129,6 +129,7 @@ public class ApplicationListViewAdapter extends BaseAdapter implements OnScrollL
             tv.setText("用户应用：" + mUserAppCount);
             tv.setTextColor(Color.WHITE);
             tv.setBackgroundColor(Color.GRAY);
+            tv.setVisibility(View.GONE);
             tv.setTextSize(DensityUtil.dip2px(mListView.getContext(), 10));
             return tv;
         } else if (position == mUserAppCount - 1) {
@@ -270,10 +271,10 @@ public class ApplicationListViewAdapter extends BaseAdapter implements OnScrollL
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (firstVisibleItem < mUserAppCount - 1) {
             mTvAppTile.setText("用户应用：" + mUserAppCount);
-            mTvAppTile.setVisibility(View.VISIBLE);
+            mTvAppTile.setVisibility(View.GONE);
         } else if (firstVisibleItem >= mUserAppCount - 2) {
             mTvAppTile.setText("系统应用：" + mSysAppCount);
-            mTvAppTile.setVisibility(View.VISIBLE);
+            mTvAppTile.setVisibility(View.GONE);
         }
 
         if (mLoadCount < 2) {

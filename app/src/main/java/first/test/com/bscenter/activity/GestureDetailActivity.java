@@ -10,11 +10,13 @@ import com.leo.gesturelibray.view.CustomLockView;
 import org.greenrobot.eventbus.EventBus;
 
 import first.test.com.bscenter.R;
+import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
 import first.test.com.bscenter.constants.Constants;
 import first.test.com.bscenter.event.SSClearEvent;
 import first.test.com.bscenter.event.SSSetEvent;
+import first.test.com.bscenter.event.SSVerifyEvent;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.PasswordUtil;
 
@@ -30,6 +32,7 @@ public class GestureDetailActivity extends BaseActivity<MainPresenter.MainUiCall
 
     private CustomLockView mLvLock;
     private TextView tvHint;
+    private int mValue;
 
     @Override
     public void initTitle() {
@@ -43,6 +46,7 @@ public class GestureDetailActivity extends BaseActivity<MainPresenter.MainUiCall
         tvHint = findViewById(R.id.tv_hint);
         //设置模式
         LockMode lockMode = (LockMode) getIntent().getSerializableExtra(Constants.INTENT_SECONDACTIVITY_KEY);
+        mValue = (int) getIntent().getIntExtra(Constants.INTENT_type_KEY,0);
         setLockMode(lockMode);
 
 
@@ -84,8 +88,13 @@ public class GestureDetailActivity extends BaseActivity<MainPresenter.MainUiCall
             }else if (mLvLock.getMode() == LockMode.CLEAR_PASSWORD){
                 EventBus.getDefault().post(new SSClearEvent());
             }else if (mLvLock.getMode() == LockMode.VERIFY_PASSWORD){
-                Intent intent = new Intent(GestureDetailActivity.this,HomeActivity.class);
-                startActivity(intent);
+                if (mValue == 0){
+                    Intent intent = new Intent(GestureDetailActivity.this,MainActivity.class);
+                    startActivity(intent);
+                }else {
+                    EventBus.getDefault().post(new SSVerifyEvent());
+                }
+
             }
             finish();
         }

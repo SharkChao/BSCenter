@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,8 +17,10 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import first.test.com.bscenter.R;
+import first.test.com.bscenter.activity.main.DetailActivity;
 import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.core.common.FileType;
 import first.test.com.bscenter.dao.DaoFactory;
@@ -25,6 +28,7 @@ import first.test.com.bscenter.dao.impl.FavoriteDao;
 import first.test.com.bscenter.fragment.FileListPageFragment;
 import first.test.com.bscenter.fragment.ViewPageFragment;
 import first.test.com.bscenter.model.Favorite;
+import first.test.com.bscenter.utils.OpenFileUtil;
 import first.test.com.bscenter.utils.TextUtil;
 
 
@@ -119,8 +123,18 @@ public class FavoriteListViewAdapter extends BaseAdapter {
 
                 } else {
                     if (file.exists()) {
-                        mViewPageFragment.setPage(0);
-                        mFileListPageFragment.autoDeploymentTopNavisStack(favorite.getCanonicalPath());
+                        File file1 = new File(favorite.getCanonicalPath());
+
+                        if (file1.exists()) {
+                            Intent intent = OpenFileUtil.openFile(favorite.getCanonicalPath());
+                            mContext.startActivity(intent);
+                        } else {
+                            Toast.makeText(mContext, "文件已经不存在了~~", Toast.LENGTH_SHORT).show();
+                        }
+//                        Intent intent = new Intent(mContext, DetailActivity.class);
+//                        intent.putExtra("detail_file_path",favorite.getCanonicalPath());
+//                        mContext.startActivity(intent);
+//                        mFileListPageFragment.autoDeploymentTopNavisStack(favorite.getCanonicalPath());
                     } else {
                         Builder dialog = new Builder(mContext);
                         dialog.setTitle("提醒").setMessage("很遗憾，您收藏文件从宇宙消失了，你可以删除这条记录！");

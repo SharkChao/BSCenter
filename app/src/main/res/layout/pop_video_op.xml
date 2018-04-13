@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="180dp"
-    android:layout_height="50dp" >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -10,7 +10,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/shape_popwindow"
+        android:background="@color/colorPrimary"
         android:gravity="center_vertical" >
 
         <LinearLayout
@@ -23,8 +23,8 @@
 
             <ImageView
                 android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="2dp"
                 android:background="@drawable/top_selector"
@@ -37,9 +37,40 @@
                 android:layout_marginBottom="2dp"
                 android:layout_marginTop="2dp"
                 android:text="详情"
+                android:textSize="@dimen/font_smaller"
                 android:textColor="@color/white" />
         </LinearLayout>
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/vertical_line" />
 
+        <LinearLayout
+            android:id="@+id/mVideoPopFavorite"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/top_selector"
+            android:clickable="true"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="2dp"
+                android:src="@drawable/op_bookmark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:text="保险"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_smaller" />
+        </LinearLayout>
         <ImageView
             android:id="@+id/imageView1"
             android:layout_width="wrap_content"
@@ -56,8 +87,8 @@
 
             <ImageView
                 android:id="@+id/imageButton1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="2dp"
                 android:src="@drawable/op_del" />
@@ -69,6 +100,7 @@
                 android:layout_marginBottom="2dp"
                 android:layout_marginTop="2dp"
                 android:text="删除"
+                android:textSize="@dimen/font_smaller"
                 android:textColor="@color/white" />
         </LinearLayout>
 
@@ -84,12 +116,13 @@
             android:layout_height="wrap_content"
             android:background="@drawable/top_selector"
             android:clickable="true"
+            android:paddingRight="10dp"
             android:orientation="vertical" >
 
             <ImageView
                 android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="2dp"
                 android:background="@drawable/top_selector"
@@ -102,39 +135,11 @@
                 android:layout_marginBottom="2dp"
                 android:layout_marginTop="2dp"
                 android:text="分享"
+                android:textSize="@dimen/font_smaller"
                 android:textColor="@color/white" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/vertical_line" />
 
-        <LinearLayout
-            android:id="@+id/mVideoPopFavorite"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/top_selector"
-            android:clickable="true"
-            android:orientation="vertical" >
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="2dp"
-                android:src="@drawable/op_bookmark" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="2dp"
-                android:layout_marginTop="2dp"
-                android:text="收藏"
-                android:textColor="@color/white" />
-        </LinearLayout>
     </LinearLayout>
 
     <ImageView
@@ -143,6 +148,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/linearLayout1"
         android:layout_alignParentLeft="true"
+        android:visibility="gone"
         android:src="@drawable/arr" />
 
 </RelativeLayout>

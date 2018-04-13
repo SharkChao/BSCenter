@@ -8,13 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
-        android:background="@color/color_green_1" >
+        android:background="@color/colorPrimary" >
 
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="45dp"
             android:background="@drawable/top_selector"
             android:onClick="back"
+            android:visibility="gone"
             android:src="@drawable/ab_ic_back_light_pressed" />
 
         <ImageView
@@ -65,7 +66,7 @@
             android:text="用户应用"
             android:textColor="#fff"
             android:textSize="20sp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
     </FrameLayout>
 
 </RelativeLayout>

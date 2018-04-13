@@ -56,11 +56,12 @@ public class PermisionUtils {
         return true;
     }
     private static void showMessageDialog(final int code, final Activity activity){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("权限");
         switch (code){
             case REQUEST_EXTERNAL_STORAGE:
-                builder.setMessage("软件升级需要获取文件权限");
+                builder.setMessage("统计文件需要获取文件权限");
+                break;
             case REQUEST_CAMERA:
                 builder.setMessage("人脸识别需要相机权限");
                 break;
@@ -86,9 +87,12 @@ public class PermisionUtils {
                 }else if (code == REQUEST_CAMERA){
                     Toast.makeText(activity, "您的软件将无法进行人脸识别,请在[设置]-[授权管理]中打开", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
-        builder.create().show();
+//        builder.setCancelable(false);
+         AlertDialog alertDialog = builder.create();
+        alertDialog.show();
 
     }
 }

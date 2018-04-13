@@ -3,6 +3,9 @@ package first.test.com.bscenter.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.lmw.demo.slidingtab.widget.PagerSlidingTabStrip;
 
 import android.os.Bundle;
@@ -16,10 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import first.test.com.bscenter.R;
+import first.test.com.bscenter.event.BXXClearEvent;
+import first.test.com.bscenter.event.FaceClearEvent;
 
 
 public class ViewPageFragment extends Fragment {
 
+    private int max = 0;
     private FileListPageFragment mFileListPageFragment = null;
     private FileCategoryPageFragment mFileCategoryPageFragment = null;
     private FavoritePageFragment mFavoritePageFragment = null;
@@ -37,27 +43,30 @@ public class ViewPageFragment extends Fragment {
         findViews(inflater);
         initFragment();
 
-        mPagerItemList.add(mFileListPageFragment);
+
+//        mPagerItemList.add(mFileListPageFragment);
         mPagerItemList.add(mFileCategoryPageFragment);
         mPagerItemList.add(mFavoritePageFragment);
 
-        mAdapter = new ViewPagerAdapter(getFragmentManager(), new String[] { "目录", "分类", "收藏" });
+        mAdapter = new ViewPagerAdapter(getFragmentManager(), new String[] { "文件分类", "保险柜" });
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(3);
         mTabs = (PagerSlidingTabStrip) mView.findViewById(R.id.pageTabs);
         mTabs.setViewPager(mViewPager);
-        
+
+
+
 
         mTabs.setOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
 //                Toast.makeText(mView.getContext(), "位置" + position, 0).show();
-                if(position == 2) {
+                if(position == 1) {
                     mFavoritePageFragment.reLoadFavoriteList();
                     mFavoritePageFragment.startListAnim();
-                } else if (position == 0) {
+                } else if (position == 2) {
                     mFileListPageFragment.startAnim();
-                } else if(position == 1) {
+                } else if(position == 0) {
                     mFileCategoryPageFragment.startPieChartAnim();
                     mFileCategoryPageFragment.refreshUi();
                 }
@@ -80,12 +89,16 @@ public class ViewPageFragment extends Fragment {
                 }
             }
         });
+
+        new EventBus().register(this);
         return mView;
     }
     
     public FileCategoryPageFragment getFileCategoryPageFragment() {
         return mFileCategoryPageFragment;
     }
+
+
 
     public List<Fragment> getPageFragments() {
         return mPagerItemList;
@@ -101,7 +114,7 @@ public class ViewPageFragment extends Fragment {
     }
 
     private void initFragment() {
-        mFileListPageFragment = new FileListPageFragment();
+//        mFileListPageFragment = new FileListPageFragment();
         mFileCategoryPageFragment = new FileCategoryPageFragment();
         mFavoritePageFragment = new FavoritePageFragment();
 
@@ -179,10 +192,21 @@ public class ViewPageFragment extends Fragment {
     public void onResume() {
         super.onResume();
         
-        if(mViewPager.getCurrentItem() == 1) {
+        if(max> 0&&mViewPager.getCurrentItem() == 0) {
             mFileCategoryPageFragment.refreshUi();
-            
         }
+        max++;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+//        new EventBus().unregister(this);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
+    public void onMessageEvent(BXXClearEvent event) {
+        if (event != null){
+
+        }
+    }
 }
