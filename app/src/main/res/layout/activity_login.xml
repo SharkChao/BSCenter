@@ -26,7 +26,9 @@
             android:paddingRight="@dimen/spacing_16"
             android:background="@drawable/lx_drop_down_backgound"
             android:textSize="@dimen/font_smaller"
+            android:inputType="number"
             android:textColor="@color/black"
+            android:maxLength="10"
             android:layout_gravity="center_horizontal"
             android:gravity="center_vertical"/>
         <EditText
@@ -43,6 +45,8 @@
             android:paddingRight="@dimen/spacing_16"
             android:background="@drawable/lx_drop_down_backgound"
             android:textSize="@dimen/font_smaller"
+            android:maxLength="10"
+            android:inputType="textPassword"
             android:textColor="@color/black"
             android:layout_gravity="center_horizontal"
             android:gravity="center_vertical"/>
