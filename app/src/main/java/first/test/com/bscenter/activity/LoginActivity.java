@@ -1,11 +1,16 @@
 package first.test.com.bscenter.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.ViewDataBinding;
 import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +20,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.iflytek.cloud.ErrorCode;
+import com.iflytek.cloud.IdentityListener;
+import com.iflytek.cloud.IdentityResult;
+import com.iflytek.cloud.IdentityVerifier;
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
 import com.kongqw.util.FaceUtil;
 import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.util.StringUtils;
@@ -22,6 +34,8 @@ import com.leo.gesturelibray.util.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,6 +62,8 @@ import first.test.com.bscenter.event.FaceClearEvent;
 import first.test.com.bscenter.event.FaceSetEvent;
 import first.test.com.bscenter.event.SSClearEvent;
 import first.test.com.bscenter.event.SSSetEvent;
+import first.test.com.bscenter.event.VoiceClearEvent;
+import first.test.com.bscenter.event.VoiceSetEvent;
 import first.test.com.bscenter.greendao.DaoMaster;
 import first.test.com.bscenter.greendao.DaoSession;
 import first.test.com.bscenter.greendao.GreenDaoManager;
@@ -70,7 +86,7 @@ import zwh.com.lib.RxFingerPrinter;
  */
 @ContentView(R.layout.activity_login)
 
-public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> implements MainPresenter.MainUi{
+public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> implements MainPresenter.MainUi {
     private EditText etName;
     private EditText etPassword;
     private TextView btnRegister;
@@ -85,6 +101,8 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     public static Map<String, String> mAppNameMap = null;
     private static final String TAG = "DeploymentOperation";
     private static final String DATABASE_NAME = "appdirname.db";
+    private Button mRvSettingVoice;
+    private IdentityVerifier mIdVerifier;
 
     @Override
     public void initTitle() {
@@ -95,7 +113,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     public void initView(ViewDataBinding viewDataBinding) {
         mBinding = (ActivityLoginBinding) viewDataBinding;
         btnRegister = mBinding.btnRegister;
-        btnLogin  = mBinding.btnLogin;
+        btnLogin = mBinding.btnLogin;
         etName = mBinding.edtAccount;
         etPassword = mBinding.edtPassword;
         btnMore = mBinding.btnMore;
@@ -103,8 +121,11 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
     @Override
     public void initData() {
+        requestPermissions();
         EventBus.getDefault().register(this);
         deployeDataBase(getApplicationContext(), false);
+
+
 //        initResource();
     }
 
@@ -113,14 +134,41 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+    private void requestPermissions(){
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                int permission = ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if(permission!= PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,new String[]
+                            {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.LOCATION_HARDWARE,Manifest.permission.READ_PHONE_STATE,
+                                    Manifest.permission.WRITE_SETTINGS,Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.RECORD_AUDIO,Manifest.permission.READ_CONTACTS},0x0010);
+                }
 
+                if(permission != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,new String[] {
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION},0x0010);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    public  void initialFavoriteDatabase() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void initialFavoriteDatabase() {
 //        PermisionUtils.verifyStoragePermissions(BaseActivity.currentActivity);
         File file = new File("/");
         int size = 0;
-        if(file != null && file.listFiles() != null){
-             size = file.listFiles().length;
+        if (file != null && file.listFiles() != null) {
+            size = file.listFiles().length;
         }
         Favorite favoriteRoot = new Favorite("/", "Root目录", "根目录", FileType.TYPE_FOLDER, System.currentTimeMillis(), size, "安装时加入");
         FavoriteDao dao = DaoFactory.getFavoriteDao(MyLeanCloudApp.getInstance());
@@ -129,7 +177,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         boolean sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
         if (sdCardExist) {
             file = Environment.getExternalStorageDirectory();
-            if(file != null && file.list() != null){
+            if (file != null && file.list() != null) {
                 size = file.list().length;
             }
             try {
@@ -141,9 +189,6 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
             }
         }
     }
-
-
-
 
 
     /**
@@ -243,25 +288,26 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
             System.out.println("扩展名：" + key + " 类型： " + map.get(key)[0] + ", 类别：" + map.get(key)[1]);
         }
     }
+
     @Override
     protected void initEvent() {
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (CommonUtil.isStrEmpty(etName.getText().toString())){
-                    CommonUtil.showSnackBar(btnRegister,"请先输入账号");
+                if (CommonUtil.isStrEmpty(etName.getText().toString())) {
+                    CommonUtil.showSnackBar(btnRegister, "请先输入账号");
                     return;
                 }
-                if (CommonUtil.isStrEmpty(etPassword.getText().toString())){
-                    CommonUtil.showSnackBar(btnRegister,"请先输入密码");
+                if (CommonUtil.isStrEmpty(etPassword.getText().toString())) {
+                    CommonUtil.showSnackBar(btnRegister, "请先输入密码");
                     return;
                 }
 
@@ -274,10 +320,10 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 DaoSession daoSession = master.newSession();
                 UserDao userDao = daoSession.getUserDao();
                 User unique = userDao.queryBuilder().where(UserDao.Properties.Name.eq(user.getName()), UserDao.Properties.Password.eq(user.getPassword())).unique();
-                if (unique == null){
+                if (unique == null) {
                     Toast.makeText(LoginActivity.this, "登录失败,请核对账号密码后重试!", Toast.LENGTH_SHORT).show();
-                }else {
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                } else {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -304,7 +350,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 }, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        showAlert4();
                     }
                 });
 
@@ -316,18 +362,19 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         });
     }
 
-    public void showAlert1(){
+    public void showAlert1() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_view1,null);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_view1, null);
         builder.setView(view);
         final AlertDialog alertDialog = builder.create();
-        final FingerPrinterView fingerPrinterView = (FingerPrinterView)view.findViewById(R.id.fpv);
+        final FingerPrinterView fingerPrinterView = (FingerPrinterView) view.findViewById(R.id.fpv);
         fingerPrinterView.setOnStateChangedListener(new FingerPrinterView.OnStateChangedListener() {
-            @Override public void onChange(int state) {
+            @Override
+            public void onChange(int state) {
                 if (state == FingerPrinterView.STATE_CORRECT_PWD) {
                     Toast.makeText(LoginActivity.this, "指纹识别成功", Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -358,8 +405,8 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
             @Override
             public void onError(Throwable e) {
-                if(e instanceof FPerException){
-                    Toast.makeText(LoginActivity.this,((FPerException) e).getDisplayMessage(),Toast.LENGTH_SHORT).show();
+                if (e instanceof FPerException) {
+                    Toast.makeText(LoginActivity.this, ((FPerException) e).getDisplayMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -370,9 +417,9 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
 
             @Override
             public void onNext(Boolean aBoolean) {
-                if(aBoolean){
+                if (aBoolean) {
                     fingerPrinterView.setState(FingerPrinterView.STATE_CORRECT_PWD);
-                }else{
+                } else {
                     fingerPrinterView.setState(FingerPrinterView.STATE_WRONG_PWD);
                 }
             }
@@ -384,7 +431,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         alertDialog.show();
     }
 
-    public void showAlert2(){
+    public void showAlert2() {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
         View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view2, null);
 
@@ -394,7 +441,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         Button rvVerify = (Button) contentView.findViewById(R.id.btn2);
 
         String pin = PasswordUtil.getPin(this);
-        mRvSetting.setVisibility(CommonUtil.isStrEmpty(pin)?View.VISIBLE:View.GONE);
+        mRvSetting.setVisibility(CommonUtil.isStrEmpty(pin) ? View.VISIBLE : View.GONE);
         rvClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -423,6 +470,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         builder.setView(contentView);
         builder.create().show();
     }
+
     /**
      * 跳转到密码处理界面
      */
@@ -439,7 +487,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         startActivity(intent);
     }
 
-    private void showAlert3(){
+    private void showAlert3() {
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
         View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view3, null);
 
@@ -448,7 +496,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         mRvSettingFace = (Button) contentView.findViewById(R.id.btn1);
         Button rvVerify = (Button) contentView.findViewById(R.id.btn2);
         Bitmap bitmap = FaceUtil.getImage(this, Constants.FACE_FILE_NAME_SAVE);
-        mRvSettingFace.setVisibility(CommonUtil.isNotEmpty(bitmap)?View.GONE:View.VISIBLE);
+        mRvSettingFace.setVisibility(CommonUtil.isNotEmpty(bitmap) ? View.GONE : View.VISIBLE);
         rvClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -478,7 +526,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
         builder.create().show();
     }
 
-    private void actionFaceActivity(int value){
+    private void actionFaceActivity(int value) {
         // 要校验的权限
         PermisionUtils.verifyCameraPermissions(this);
         if (value != Constants.FACE_MODE_SET) {
@@ -488,43 +536,183 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
                 return;
             }
         }
-        Intent intent = new Intent(LoginActivity.this,FaceDetailActivity.class);
-        intent.putExtra("face_key",value);
+        Intent intent = new Intent(LoginActivity.this, FaceDetailActivity.class);
+        intent.putExtra("face_key", value);
         intent.putExtra(Constants.INTENT_type_KEY, 0);
         startActivity(intent);
 
     }
+
+    private void actionVoiceActivity(int value) {
+        // 要校验的权限
+//        PermisionUtils.verifyCameraPermissions(this);
+
+        Intent intent = new Intent(LoginActivity.this, VocalVerifyActivity.class);
+        intent.putExtra("voice_key", value);
+        startActivity(intent);
+
+    }
+
+    private void showAlert4() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view3, null);
+
+        Button rvClear = (Button) contentView.findViewById(R.id.btn4);
+        Button rvEdit = (Button) contentView.findViewById(R.id.btn3);
+        mRvSettingVoice = (Button) contentView.findViewById(R.id.btn1);
+        Button rvVerify = (Button) contentView.findViewById(R.id.btn2);
+        mIdVerifier = IdentityVerifier.createVerifier(LoginActivity.this, new InitListener() {
+
+            @Override
+            public void onInit(int errorCode) {
+                if (ErrorCode.SUCCESS == errorCode) {
+                    Toast.makeText(LoginActivity.this, "引擎初始化成功!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "引擎初始化失败，错误码："+errorCode, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // 设置声纹模型参数
+        // 清空参数
+        mIdVerifier.setParameter(SpeechConstant.PARAMS, null);
+        // 设置会话场景
+        mIdVerifier.setParameter(SpeechConstant.MFV_SCENES, "ivp");
+        // 用户id
+        mIdVerifier.setParameter(SpeechConstant.AUTH_ID, "1");
+
+        // 子业务执行参数，若无可以传空字符传
+        StringBuffer params3 = new StringBuffer();
+        // 设置模型操作的密码类型
+        int mPwdType = 3;
+        params3.append("pwdt=" + mPwdType + ",");
+        // 执行模型操作
+        mIdVerifier.execute("ivp", "query", params3.toString(), mModelListener);
+
+//        mRvSettingVoice.setVisibility(CommonUtil.isNotEmpty(bitmap) ? View.GONE : View.VISIBLE);
+        rvClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                actionVoiceActivity(Constants.VOICE_MODE_CLEAR);
+            }
+        });
+        rvEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                actionFaceActivity(Constants.FACE_MODE_EDIT);
+            }
+        });
+        mRvSettingVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                actionVoiceActivity(Constants.VOICE_MODE_SET);
+//                Intent intent = new Intent(LoginActivity.this,VocalVerifyActivity.class);
+//                startActivity(intent);
+            }
+        });
+        rvVerify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                actionVoiceActivity(Constants.VOICE_MODE_VERFIY);
+            }
+        });
+
+        builder.setView(contentView);
+        builder.create().show();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SSSetEvent event) {
-        if (event != null){
-           if (mRvSetting  != null){
-               mRvSetting.setVisibility(View.GONE);
-           }
+        if (event != null) {
+            if (mRvSetting != null) {
+                mRvSetting.setVisibility(View.GONE);
+            }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SSClearEvent event) {
-        if (event != null){
-            if (mRvSetting  != null){
+        if (event != null) {
+            if (mRvSetting != null) {
                 mRvSetting.setVisibility(View.VISIBLE);
             }
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(VoiceClearEvent event) {
+        if (event != null) {
+            if (mRvSettingVoice != null) {
+                mRvSettingVoice.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(FaceSetEvent event) {
-        if (event != null){
-            if (mRvSettingFace  != null){
+        if (event != null) {
+            if (mRvSettingFace != null) {
                 mRvSettingFace.setVisibility(View.GONE);
             }
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(VoiceSetEvent event) {
+        if (event != null) {
+            if (mRvSettingVoice != null) {
+                mRvSettingVoice.setVisibility(View.GONE);
+            }
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(FaceClearEvent event) {
-        if (event != null){
-            if (mRvSettingFace  != null){
+        if (event != null) {
+            if (mRvSettingFace != null) {
                 mRvSettingFace.setVisibility(View.VISIBLE);
             }
         }
     }
 
+    /**
+     * 声纹模型操作监听器
+     */
+    private IdentityListener mModelListener = new IdentityListener() {
+
+        @Override
+        public void onResult(IdentityResult result, boolean islast) {
+            Log.d(TAG, "model operation:" + result.getResultString());
+
+
+            JSONObject jsonResult = null;
+            int ret = ErrorCode.SUCCESS;
+            try {
+                jsonResult = new JSONObject(result.getResultString());
+                ret = jsonResult.getInt("ret");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if (ErrorCode.SUCCESS == ret) {
+                if (mRvSettingVoice != null){
+                    mRvSettingVoice.setVisibility(View.GONE);
+                }
+            } else {
+//                Toast.makeText(LoginActivity.this, "模型不存在", Toast.LENGTH_SHORT).show();
+                if (mRvSettingVoice != null){
+                    mRvSettingVoice.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
+        @Override
+        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
+        }
+
+        @Override
+        public void onError(SpeechError error) {
+            Toast.makeText(LoginActivity.this, error.getPlainDescription(true), Toast.LENGTH_SHORT).show();
+        }
+    };
 }

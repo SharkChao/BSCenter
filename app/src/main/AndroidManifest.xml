@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:name="first.test.com.bscenter.base.MyLeanCloudApp"
         android:theme="@style/AppTheme">
-        <activity android:name="first.test.com.libra.MainActivity">
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -99,11 +99,6 @@
             android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" >
         </activity>
         <activity
-            android:name=".activity.main.AboutMeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" >
-        </activity>
-        <activity
             android:name=".activity.main.WelcomActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" >
@@ -116,6 +111,11 @@
         </activity>
         <activity
             android:name=".activity.main.DetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity
+            android:name=".activity.VocalVerifyActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" >
         </activity>

@@ -24,6 +24,12 @@ public class Constants {
     public static final int FACE_MODE_EDIT = 3;
     public static final int FACE_MODE_CLEAR = 4;
 
+
+    public static final int VOICE_MODE_SET = 0;
+    public static final int VOICE_MODE_VERFIY = 1;
+    public static final int VOICE_MODE_EDIT = 3;
+    public static final int VOICE_MODE_CLEAR = 2;
+
     public static final String DATABASE_APP_DIR_NAME = "appdirname.db";
 
     public static final String PREFERENCE_NAME = "green_dam_explorer";

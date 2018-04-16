@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import first.test.com.bscenter.R;
-import first.test.com.bscenter.activity.main.AboutMeActivity;
 import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.activity.main.WelcomActivity;
 import first.test.com.bscenter.core.engine.ResourceManager;
@@ -146,7 +145,7 @@ public class LeftMenuFragment extends Fragment implements OnClickListener{
             dialog.show();
             break;
         case R.id.mLeftMenuAboutme:
-             intent = new Intent(getActivity(), AboutMeActivity.class);
+//             intent = new Intent(getActivity(), AboutMeActivity.class);
             startActivity(intent);
             break;
         case R.id.mLeftMenuRefresh:

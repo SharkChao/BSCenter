@@ -14,11 +14,12 @@
         android:gravity="center" >
 
         <TextView
+            android:id="@+id/voice_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="讯飞语音声纹示例"
+            android:text="声纹注册"
             android:textSize="30sp" />
     </LinearLayout>
 
@@ -27,6 +28,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/set_authId"
         android:maxLines="1"
+        android:visibility="gone"
         android:hint="请输入 authId"/>
 
     <EditText
@@ -51,6 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="获取密码" />
 
         <Button
@@ -59,14 +62,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="查询模型" />
 
         <Button
-            android:id="@+id/isv_delete"
             style="@style/textStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="删除模型" />
     </LinearLayout>
 
@@ -93,6 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text=" 声纹注册"
+                android:visibility="gone"
                 android:textSize="18sp" >
             </RadioButton>
 
@@ -101,7 +106,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text=" 1:1验证"
+                android:text=" 声波识别"
+                android:visibility="gone"
                 android:textSize="18sp" >
             </RadioButton>
         </RadioGroup>
@@ -119,7 +125,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/white"
+            android:background="@drawable/iv_app_button_select"
             android:text="开始录音" />
+        <Button
+            android:id="@+id/isv_delete"
+            style="@style/textStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:background="@drawable/iv_app_button_select"
+            android:text="重置声纹特征" />
 
         <Button
             android:id="@+id/isv_identity"
@@ -127,6 +145,7 @@
             android:layout_width="0.1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="1:N验证" />
     </LinearLayout>
 

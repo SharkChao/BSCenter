@@ -6,6 +6,8 @@ import android.os.Environment;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
+import com.iflytek.cloud.SpeechUtility;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class MyLeanCloudApp extends Application{
         PACKAGE_NAME = getPackageName();
 
 //        deployeDataBase(getApplicationContext(), false);
-
+        SpeechUtility.createUtility(this, "appid=" + "5ad40bbd");
         initResource();
     }
 

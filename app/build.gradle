@@ -56,6 +56,11 @@ android {
         pickFirst 'META-INF/maven/org.bytedeco.javacpp-presets/ffmpeg/pom.xml'
     }
     useLibrary 'org.apache.http.legacy'
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 
 }
 
