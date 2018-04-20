@@ -41,8 +41,10 @@ import first.test.com.bscenter.R;
 import first.test.com.bscenter.activity.main.MainActivity;
 import first.test.com.bscenter.annotation.ContentView;
 import first.test.com.bscenter.base.BaseActivity;
+import first.test.com.bscenter.constants.Constants;
 import first.test.com.bscenter.event.VoiceClearEvent;
 import first.test.com.bscenter.event.VoiceSetEvent;
+import first.test.com.bscenter.event.VoiceVerifyEvent;
 import first.test.com.bscenter.presenter.MainPresenter;
 import first.test.com.bscenter.utils.CommonUtil;
 
@@ -247,9 +249,15 @@ public class VocalVerifyActivity extends BaseActivity<MainPresenter.MainUiCallba
 				if ("accepted".equalsIgnoreCase(decision)) {
 					mResultEditText.setText("验证通过");
 					if (mSST == 1){
-						Intent intent = new Intent(VocalVerifyActivity.this, MainActivity.class);
-						startActivity(intent);
-						finish();
+						if (mValue == 0){
+							Intent intent = new Intent(VocalVerifyActivity.this, MainActivity.class);
+							startActivity(intent);
+							finish();
+						}else {
+							EventBus.getDefault().post(new VoiceVerifyEvent());
+							finish();
+						}
+
 					}else if (mSST == 2){
 						canClear = true;
 					}
@@ -391,9 +399,10 @@ public class VocalVerifyActivity extends BaseActivity<MainPresenter.MainUiCallba
 
 	}
 
+	private int mValue;
 	@Override
 	public void initData() {
-
+		mValue = (int) getIntent().getIntExtra(Constants.INTENT_type_KEY,0);
 		initUi();
 
 		mIdVerifier = IdentityVerifier.createVerifier(VocalVerifyActivity.this, new InitListener() {

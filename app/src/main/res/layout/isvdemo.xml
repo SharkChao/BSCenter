@@ -136,6 +136,7 @@
             android:layout_weight="1"
             android:textColor="@color/white"
             android:visibility="gone"
+            android:layout_marginLeft="20dp"
             android:background="@drawable/iv_app_button_select"
             android:text="重置声纹特征" />
 

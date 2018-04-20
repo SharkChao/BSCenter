@@ -532,7 +532,7 @@ public class DocumentsActivity extends Activity implements OnItemClickListener, 
             return;
         }
         File file = new File(path);
-        Favorite favorite = new Favorite(path, file.getName(), "", FileType.TYPE_UNKNOWN, System.currentTimeMillis(), file.length(), "");
+        Favorite favorite = new Favorite(path, file.getName(), "", FileType.TYPE_TXT, System.currentTimeMillis(), file.length(), "");
         dao.insertFavorite(favorite);
         Toast.makeText(this, "成功添加到保险箱！", Toast.LENGTH_SHORT).show();
 

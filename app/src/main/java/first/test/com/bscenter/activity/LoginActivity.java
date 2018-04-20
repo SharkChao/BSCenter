@@ -556,7 +556,7 @@ public class LoginActivity extends BaseActivity<MainPresenter.MainUiCallback> im
     private void showAlert4() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-        View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view3, null);
+        View contentView = LayoutInflater.from(LoginActivity.this).inflate(R.layout.dialog_view4, null);
 
         Button rvClear = (Button) contentView.findViewById(R.id.btn4);
         Button rvEdit = (Button) contentView.findViewById(R.id.btn3);

@@ -34,4 +34,11 @@ public class Constants {
 
     public static final String PREFERENCE_NAME = "green_dam_explorer";
 
+    public static final int INDEX_PICURE = 1;
+    public static final int INDEX_VIDEO = 14;
+    public static final int INDEX_AUDIO = 10;
+    public static final int INDEX_DOCUMENT = 2;
+    public static final int INDEX_ZIP = 11;
+    public static final int INDEX_APK = 21;
+
 }

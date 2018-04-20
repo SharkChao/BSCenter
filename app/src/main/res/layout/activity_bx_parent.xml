@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center_vertical"
+    >
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@mipmap/iv_circle"/>
+    <TextView
+        android:id="@+id/tvType"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="图片"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="@dimen/font_large"
+        android:textColor="@color/black"/>
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="20dp"
+        android:gravity="left">
+        <TextView
+            android:id="@+id/tvNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="number:20M"
+            android:textSize="@dimen/font_smaller"
+            android:textColor="@color/gray_2"/>
+        <TextView
+            android:id="@+id/tvMuber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="size:20M"
+            android:textSize="@dimen/font_smaller"
+            android:textColor="@color/gray_2"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivRight"
+        android:layout_width="15dp"
+        android:layout_height="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@mipmap/iv_down_gray2"/>
+</LinearLayout>

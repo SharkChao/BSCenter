@@ -540,7 +540,7 @@ public class ImageWallActivity extends Activity implements OnItemClickListener, 
             return;
         }
         File file = new File(path);
-        Favorite favorite = new Favorite(path, file.getName(), "", FileType.TYPE_APK, System.currentTimeMillis(), file.length(), "");
+        Favorite favorite = new Favorite(path, file.getName(), "", FileType.TYPE_PICTURE, System.currentTimeMillis(), file.length(), "");
         dao.insertFavorite(favorite);
         Toast.makeText(this, "成功添加到保险柜！", Toast.LENGTH_SHORT).show();
         mImages.remove(mChoosePosition);

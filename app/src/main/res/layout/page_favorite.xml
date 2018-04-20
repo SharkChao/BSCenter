@@ -5,6 +5,7 @@
     android:background="@color/bg_light" >
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentLeft="true"
@@ -63,10 +64,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="46dp"
         android:gravity="center"
         android:layout_above="@+id/mFavoriteBottomDelete">
-        <ListView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/mListViewFavorit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -75,7 +75,7 @@
             android:dividerHeight="0dp"
             android:footerDividersEnabled="false"
             android:layoutAnimation="@anim/favorite_list_anim_layout" >
-        </ListView>
+        </android.support.v7.widget.RecyclerView>
         <Button
             android:id="@+id/btnJS"
             android:layout_width="wrap_content"
@@ -99,6 +99,7 @@
         android:background="@drawable/choose_bottom_selector"
         android:clickable="true"
         android:gravity="center"
+        android:visibility="gone"
         android:orientation="horizontal" >
 
         <ImageView

@@ -73,6 +73,7 @@ public class FavoriteListViewAdapter extends BaseAdapter {
 
         View view = convertView;
         ViewHolder holder = null;
+
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.favorite_list_item, null);
             holder = new ViewHolder();
